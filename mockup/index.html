@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AquaBloom Mockup</title>
+  <style>* { margin: 0; padding: 0; box-sizing: border-box; } body { background: #080b10; }</style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+const { useState, useRef } = React;
+
+const GOAL_ML = 2500;
+const TEAL = "#7ec8c8";
+const LAVENDER = "#c4a7d7";
+const ROSE = "#f0a6b9";
+const GOLD = "#f0c674";
+const BG = "#0d1117";
+const BG2 = "#12161e";
+const TEXT = "#e8eaed";
+const MUTED = "#6b7280";
+const SUBTLE = "#9ba3af";
+
+const QUICK_ADD = [
+  { ml: 150, label: "Small", emoji: "🥤" },
+  { ml: 250, label: "Glass", emoji: "💧" },
+  { ml: 350, label: "Bottle", emoji: "🫧" },
+  { ml: 500, label: "Large", emoji: "💦" },
+];
+
+const REMINDERS = [
+  { time: "07:00", label: "Morning Rise", emoji: "🌅", active: true },
+  { time: "09:30", label: "Mid-Morning", emoji: "☀️", active: true },
+  { time: "11:30", label: "Before Lunch", emoji: "🍃", active: true },
+  { time: "13:00", label: "After Lunch", emoji: "🌸", active: true },
+  { time: "15:00", label: "Afternoon Boost", emoji: "✨", active: true },
+  { time: "17:00", label: "Pre-Dinner", emoji: "🌷", active: true },
+  { time: "19:00", label: "Evening Wind Down", emoji: "🌙", active: true },
+  { time: "21:00", label: "Before Bed", emoji: "💤", active: false },
+];
+
+const AFFIRMATIONS = [
+  "You're glowing from the inside out ✨",
+  "Hydration is self-love in action 💕",
+  "Your body thanks you, beautiful 🌸",
+  "Sip by sip, you're thriving 🌿",
+  "Radiant skin starts with water 💧",
+  "Keep going, gorgeous! Almost there 🌷",
+  "Water is your superpower 💪",
+  "Nourishing yourself is never selfish 🦋",
+];
+
+const PREMIUM_FEATURES = [
+  { icon: "🌙", title: "Smart Reminders", desc: "AI-powered reminders that adapt to your routine" },
+  { icon: "📊", title: "Advanced Analytics", desc: "Weekly & monthly hydration trends with insights" },
+  { icon: "🎨", title: "Custom Themes", desc: "Rose Garden, Ocean Breeze, Lavender Fields" },
+  { icon: "🏆", title: "Streak Rewards", desc: "Earn badges and celebrate milestones" },
+  { icon: "🤝", title: "Hydration Circles", desc: "Stay motivated with friends and challenges" },
+  { icon: "💊", title: "Wellness Integration", desc: "Connect with Apple Health & Google Fit" },
+];
+
+const ONBOARDING = [
+  { emoji: "🌸", title: "Welcome to AquaBloom", sub: "Your personal hydration companion, designed for the modern woman" },
+  { emoji: "💧", title: "Track Every Sip", sub: "Log your water intake with a single tap. Watch your progress bloom" },
+  { emoji: "🔔", title: "Gentle Reminders", sub: "Never forget to hydrate with beautiful, customizable notifications" },
+  { emoji: "✨", title: "Glow From Within", sub: "Stay consistent, build streaks, and watch your skin & energy transform" },
+];
+
+function ProgressRing({ progress, size = 200, stroke = 8 }) {
+  const r = (size - stroke) / 2;
+  const circ = 2 * Math.PI * r;
+  const offset = circ - progress * circ;
+  return (
+    <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
+      <defs>
+        <linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor={TEAL} />
+          <stop offset="50%" stopColor={LAVENDER} />
+          <stop offset="100%" stopColor={ROSE} />
+        </linearGradient>
+      </defs>
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(126,200,200,0.12)" strokeWidth={stroke} />
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="url(#rg)"
+        strokeWidth={stroke} strokeDasharray={circ} strokeDashoffset={offset}
+        strokeLinecap="round" style={{ transition: "stroke-dashoffset 0.8s cubic-bezier(0.4,0,0.2,1)" }} />
+    </svg>
+  );
+}
+
+function WaterDrop({ size = 28, fill = 0 }) {
+  const y = 78 - 70 * fill;
+  return (
+    <svg width={size} height={size * 1.3} viewBox="0 0 60 78" fill="none">
+      <defs><clipPath id="wc"><path d="M30 4C30 4 4 35 4 52C4 66.4 15.6 74 30 74C44.4 74 56 66.4 56 52C56 35 30 4 30 4Z"/></clipPath></defs>
+      <path d="M30 4C30 4 4 35 4 52C4 66.4 15.6 74 30 74C44.4 74 56 66.4 56 52C56 35 30 4 30 4Z" fill="rgba(126,200,200,0.12)" stroke={TEAL} strokeWidth="2"/>
+      <rect clipPath="url(#wc)" x="0" y={y} width="60" height="78" fill={TEAL} opacity="0.35" style={{transition:"y 0.6s ease"}}/>
+    </svg>
+  );
+}
+
+function HomeTab({ intake, log, addWater, undoLast, affIdx, setScreen }) {
+  const [customMl, setCustomMl] = useState("");
+  const progress = Math.min(intake / GOAL_ML, 1);
+  const pct = Math.round(progress * 100);
+  const glassesLeft = Math.max(0, Math.ceil((GOAL_ML - intake) / 250));
+  const remaining = Math.max(0, GOAL_ML - intake);
+
+  return (
+    <div style={{ padding: "0 20px 100px", overflow: "auto", flex: 1 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 0 8px" }}>
+        <div>
+          <h1 style={{ fontSize: 24, fontWeight: 300, color: TEAL, letterSpacing: 1, margin: 0 }}>AquaBloom</h1>
+          <p style={{ fontSize: 11, color: MUTED, margin: "2px 0 0" }}>
+            {new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
+          </p>
+        </div>
+        <WaterDrop size={28} fill={progress} />
+      </div>
+
+      <div style={{ display: "flex", justifyContent: "center", padding: "8px 0", position: "relative" }}>
+        <div style={{ position: "relative" }}>
+          <ProgressRing progress={progress} />
+          <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", textAlign: "center" }}>
+            <div style={{ fontSize: 38, fontWeight: 200, color: TEXT, lineHeight: 1 }}>{pct}%</div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: TEAL }}>{intake} ml</div>
+            <div style={{ fontSize: 10, color: MUTED }}>of {GOAL_ML} ml</div>
+          </div>
+        </div>
+      </div>
+
+      <p style={{ textAlign: "center", fontSize: 12, color: LAVENDER, fontStyle: "italic", margin: "8px 0 16px", lineHeight: 1.5 }}>
+        {AFFIRMATIONS[affIdx % AFFIRMATIONS.length]}
+      </p>
+
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-around", background: "rgba(126,200,200,0.04)", border: "1px solid rgba(126,200,200,0.08)", borderRadius: 14, padding: "12px 6px", marginBottom: 20 }}>
+        <div style={{ textAlign: "center" }}>
+          <div style={{ fontSize: 20, fontWeight: 300, color: TEXT }}>{glassesLeft}</div>
+          <div style={{ fontSize: 9, color: MUTED, textTransform: "uppercase", letterSpacing: 0.8 }}>glasses left</div>
+        </div>
+        <div style={{ width: 1, height: 28, background: "rgba(126,200,200,0.1)" }} />
+        <div style={{ textAlign: "center" }}>
+          <div style={{ fontSize: 20, fontWeight: 300, color: TEXT }}>{log.length}</div>
+          <div style={{ fontSize: 9, color: MUTED, textTransform: "uppercase", letterSpacing: 0.8 }}>sips today</div>
+        </div>
+        <div style={{ width: 1, height: 28, background: "rgba(126,200,200,0.1)" }} />
+        <div style={{ textAlign: "center" }}>
+          <div style={{ fontSize: 20, fontWeight: 300, color: TEXT }}>{remaining}</div>
+          <div style={{ fontSize: 9, color: MUTED, textTransform: "uppercase", letterSpacing: 0.8 }}>ml to go</div>
+        </div>
+      </div>
+
+      <div style={{ fontSize: 11, fontWeight: 600, color: SUBTLE, letterSpacing: 1.2, marginBottom: 10 }}>QUICK ADD</div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 12 }}>
+        {QUICK_ADD.map(q => (
+          <button key={q.ml} onClick={() => addWater(q.ml)} style={{
+            display: "flex", flexDirection: "column", alignItems: "center", gap: 3,
+            padding: "12px 6px", background: "rgba(126,200,200,0.05)", border: "1px solid rgba(126,200,200,0.1)",
+            borderRadius: 14, cursor: "pointer", color: TEXT, transition: "all 0.2s",
+          }}
+            onMouseOver={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 6px 20px rgba(126,200,200,0.2)"; }}
+            onMouseOut={e => { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = ""; }}
+          >
+            <span style={{ fontSize: 20 }}>{q.emoji}</span>
+            <span style={{ fontSize: 12, fontWeight: 500 }}>{q.label}</span>
+            <span style={{ fontSize: 10, fontWeight: 600, color: TEAL }}>{q.ml} ml</span>
+          </button>
+        ))}
+      </div>
+
+      <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+        <input type="number" placeholder="Custom ml..." value={customMl} onChange={e => setCustomMl(e.target.value)}
+          style={{ flex: 1, padding: "8px 12px", background: "rgba(126,200,200,0.05)", border: "1px solid rgba(126,200,200,0.1)", borderRadius: 10, color: TEXT, fontSize: 13, outline: "none" }} />
+        <button onClick={() => { const v = parseInt(customMl); if (v > 0 && v <= 2000) { addWater(v); setCustomMl(""); } }}
+          style={{ padding: "8px 16px", background: "rgba(126,200,200,0.12)", border: "1px solid rgba(126,200,200,0.15)", borderRadius: 10, color: TEAL, fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+          + Add
+        </button>
+      </div>
+
+      {log.length > 0 && (
+        <button onClick={undoLast} style={{ display: "block", width: "100%", textAlign: "center", padding: 8, background: "none", border: "none", color: MUTED, fontSize: 11, cursor: "pointer" }}>
+          ↩ Undo last ({log[0].ml} ml)
+        </button>
+      )}
+
+      <button onClick={() => setScreen("paywall")} style={{
+        display: "flex", alignItems: "center", gap: 10, width: "100%", marginTop: 14,
+        padding: 14, background: "linear-gradient(135deg, rgba(240,198,116,0.06), rgba(196,167,215,0.06))",
+        border: "1px solid rgba(240,198,116,0.12)", borderRadius: 14, cursor: "pointer", textAlign: "left",
+      }}>
+        <span style={{ fontSize: 22 }}>✨</span>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: GOLD }}>Unlock AquaBloom Premium</div>
+          <div style={{ fontSize: 11, color: MUTED, marginTop: 1 }}>Smart reminders, analytics, themes & more</div>
+        </div>
+        <span style={{ fontSize: 16, color: GOLD }}>→</span>
+      </button>
+    </div>
+  );
+}
+
+function RemindersTab() {
+  const [rems, setRems] = useState(REMINDERS);
+  return (
+    <div style={{ padding: "0 20px 100px", overflow: "auto", flex: 1 }}>
+      <div style={{ padding: "20px 0 12px" }}>
+        <h1 style={{ fontSize: 24, fontWeight: 300, color: TEAL, letterSpacing: 1, margin: 0 }}>Reminders</h1>
+        <p style={{ fontSize: 12, color: MUTED, margin: "4px 0 0" }}>Gentle nudges throughout your day</p>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        {rems.map((r, i) => (
+          <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 6px", borderRadius: 10 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <span style={{ fontSize: 18 }}>{r.emoji}</span>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 500, color: TEXT }}>{r.label}</div>
+                <div style={{ fontSize: 11, color: MUTED }}>{r.time}</div>
+              </div>
+            </div>
+            <div onClick={() => setRems(p => p.map((x,j) => j===i ? {...x, active:!x.active} : x))}
+              style={{ width: 40, height: 22, borderRadius: 11, background: r.active ? `linear-gradient(135deg,${TEAL},${LAVENDER})` : "rgba(200,200,200,0.3)", cursor: "pointer", position: "relative", transition: "background 0.3s" }}>
+              <div style={{ width: 18, height: 18, borderRadius: 9, background: "#fff", position: "absolute", top: 2,
+                left: r.active ? 20 : 2, transition: "left 0.3s", boxShadow: "0 2px 4px rgba(0,0,0,0.2)" }} />
+            </div>
+          </div>
+        ))}
+      </div>
+      <div style={{ display: "flex", gap: 8, alignItems: "flex-start", background: "rgba(126,200,200,0.04)", borderRadius: 10, padding: 12, marginTop: 16 }}>
+        <span style={{ fontSize: 14 }}>💡</span>
+        <p style={{ fontSize: 11, color: SUBTLE, lineHeight: 1.5, margin: 0 }}>
+          In the full app, these trigger native push notifications even when the app is closed. Toggle them to match your daily rhythm.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function HistoryTab({ intake, log, resetDay, setScreen }) {
+  const pct = Math.round(Math.min(intake / GOAL_ML, 1) * 100);
+  return (
+    <div style={{ padding: "0 20px 100px", overflow: "auto", flex: 1 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", padding: "20px 0 12px" }}>
+        <div>
+          <h1 style={{ fontSize: 24, fontWeight: 300, color: TEAL, letterSpacing: 1, margin: 0 }}>History</h1>
+          <p style={{ fontSize: 12, color: MUTED, margin: "4px 0 0" }}>Your hydration journey</p>
+        </div>
+        {log.length > 0 && (
+          <button onClick={resetDay} style={{ border: `1px solid rgba(240,166,185,0.2)`, borderRadius: 6, padding: "5px 12px", background: "none", color: ROSE, fontSize: 10, cursor: "pointer" }}>Reset Day</button>
+        )}
+      </div>
+
+      <div style={{ display: "flex", alignItems: "center", gap: 10, background: "rgba(126,200,200,0.04)", border: "1px solid rgba(126,200,200,0.08)", borderRadius: 14, padding: 14, marginBottom: 20 }}>
+        <span style={{ fontSize: 26 }}>🔥</span>
+        <div>
+          <div style={{ fontSize: 18, fontWeight: 300, color: TEXT }}>0 Day Streak</div>
+          <div style={{ fontSize: 11, color: MUTED }}>Hit your goal today to start a streak!</div>
+        </div>
+      </div>
+
+      <div style={{ fontSize: 11, fontWeight: 600, color: SUBTLE, letterSpacing: 1.2, marginBottom: 10 }}>TODAY'S LOG</div>
+
+      {log.length === 0 ? (
+        <div style={{ textAlign: "center", padding: "50px 0" }}>
+          <div style={{ fontSize: 36 }}>🌱</div>
+          <p style={{ color: SUBTLE, marginTop: 10, fontSize: 13 }}>No sips yet today. Start hydrating!</p>
+        </div>
+      ) : (
+        <>
+          {log.map((e, i) => (
+            <div key={e.id} style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "8px 0", position: "relative" }}>
+              <div style={{ width: 8, height: 8, borderRadius: 4, background: `linear-gradient(135deg,${TEAL},${LAVENDER})`, marginTop: 5, flexShrink: 0, zIndex: 1 }} />
+              {i < log.length - 1 && <div style={{ position: "absolute", left: 3, top: 16, bottom: -8, width: 2, background: "rgba(126,200,200,0.08)" }} />}
+              <div style={{ flex: 1 }}>
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: TEXT }}>{e.ml} ml</span>
+                  <span style={{ fontSize: 11, color: MUTED }}>{e.time}</span>
+                </div>
+                <div style={{ height: 3, background: "rgba(126,200,200,0.08)", borderRadius: 2, marginTop: 6, overflow: "hidden" }}>
+                  <div style={{ height: "100%", width: `${Math.min((e.ml/500)*100,100)}%`, background: `linear-gradient(90deg,${TEAL},${LAVENDER})`, borderRadius: 2 }} />
+                </div>
+              </div>
+            </div>
+          ))}
+          <div style={{ background: "rgba(126,200,200,0.04)", border: "1px solid rgba(126,200,200,0.08)", borderRadius: 14, padding: 16, marginTop: 16 }}>
+            <div style={{ fontSize: 10, fontWeight: 600, color: SUBTLE, letterSpacing: 1, textAlign: "center" }}>DAILY SUMMARY</div>
+            <div style={{ display: "flex", justifyContent: "space-around", marginTop: 10 }}>
+              <div style={{ textAlign: "center" }}><div style={{ fontSize: 20, fontWeight: 300, color: TEXT }}>{intake} ml</div><div style={{ fontSize: 9, color: MUTED }}>Total</div></div>
+              <div style={{ textAlign: "center" }}><div style={{ fontSize: 20, fontWeight: 300, color: TEXT }}>{Math.round(intake/log.length)}</div><div style={{ fontSize: 9, color: MUTED }}>Avg per sip</div></div>
+              <div style={{ textAlign: "center" }}><div style={{ fontSize: 20, fontWeight: 300, color: TEXT }}>{pct}%</div><div style={{ fontSize: 9, color: MUTED }}>of Goal</div></div>
+            </div>
+          </div>
+        </>
+      )}
+
+      <button onClick={() => setScreen("paywall")} style={{
+        display: "flex", alignItems: "center", gap: 10, width: "100%", marginTop: 16,
+        padding: 14, background: "rgba(240,198,116,0.05)", border: "1px solid rgba(240,198,116,0.12)",
+        borderRadius: 14, cursor: "pointer", textAlign: "left",
+      }}>
+        <span style={{ fontSize: 22 }}>📊</span>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: GOLD }}>Weekly & Monthly Trends</div>
+          <div style={{ fontSize: 11, color: MUTED, marginTop: 1 }}>Upgrade to Premium for charts & insights</div>
+        </div>
+        <span style={{ fontSize: 16, color: GOLD }}>→</span>
+      </button>
+    </div>
+  );
+}
+
+function SettingsTab({ setScreen }) {
+  const [editing, setEditing] = useState(false);
+  const [goalVal, setGoalVal] = useState("2500");
+
+  const sections = [
+    { title: "HYDRATION", items: [
+      { emoji: "🎯", label: "Daily Goal", value: `${goalVal} ml`, action: () => setEditing(!editing) },
+      { emoji: "📏", label: "Unit", value: "Milliliters (ml)", badge: "PRO" },
+    ]},
+    { title: "SUBSCRIPTION", items: [
+      { emoji: "✨", label: "Upgrade to Premium", value: "Unlock all features", action: () => setScreen("paywall"), hl: true },
+      { emoji: "🔄", label: "Restore Purchases", value: "" },
+    ]},
+    { title: "ABOUT", items: [
+      { emoji: "⭐", label: "Rate AquaBloom", value: "We appreciate your support!" },
+      { emoji: "🔒", label: "Privacy Policy", value: "" },
+      { emoji: "📄", label: "Terms of Service", value: "" },
+      { emoji: "📱", label: "Version", value: "1.0.0" },
+    ]},
+  ];
+
+  return (
+    <div style={{ padding: "0 20px 100px", overflow: "auto", flex: 1 }}>
+      <div style={{ padding: "20px 0 12px" }}>
+        <h1 style={{ fontSize: 24, fontWeight: 300, color: TEAL, letterSpacing: 1, margin: 0 }}>Settings</h1>
+        <p style={{ fontSize: 12, color: MUTED, margin: "4px 0 0" }}>Personalize your experience</p>
+      </div>
+
+      {editing && (
+        <div style={{ background: "rgba(126,200,200,0.04)", border: "1px solid rgba(126,200,200,0.1)", borderRadius: 14, padding: 16, marginBottom: 16 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: TEXT, marginBottom: 10 }}>Set Daily Goal (ml)</div>
+          <input value={goalVal} onChange={e => setGoalVal(e.target.value)} style={{ width: "100%", padding: 10, background: "rgba(126,200,200,0.08)", border: "1px solid rgba(126,200,200,0.15)", borderRadius: 10, color: TEAL, fontSize: 22, fontWeight: 600, textAlign: "center", outline: "none", boxSizing: "border-box" }} />
+          <div style={{ display: "flex", justifyContent: "space-around", marginTop: 10 }}>
+            {[1500,2000,2500,3000].map(p => (
+              <button key={p} onClick={() => setGoalVal(String(p))} style={{ padding: "4px 10px", borderRadius: 6, border: `1px solid ${goalVal===String(p) ? TEAL : "rgba(126,200,200,0.1)"}`, background: goalVal===String(p) ? "rgba(126,200,200,0.1)" : "transparent", color: goalVal===String(p) ? TEAL : MUTED, fontSize: 12, cursor: "pointer" }}>{p}</button>
+            ))}
+          </div>
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 10 }}>
+            <button onClick={() => setEditing(false)} style={{ background: "none", border: "none", color: MUTED, fontSize: 13, cursor: "pointer" }}>Cancel</button>
+            <button onClick={() => setEditing(false)} style={{ padding: "6px 14px", background: "rgba(126,200,200,0.15)", border: "none", borderRadius: 6, color: TEAL, fontWeight: 600, fontSize: 13, cursor: "pointer" }}>Save</button>
+          </div>
+        </div>
+      )}
+
+      {sections.map(sec => (
+        <div key={sec.title} style={{ marginBottom: 20 }}>
+          <div style={{ fontSize: 10, fontWeight: 600, color: SUBTLE, letterSpacing: 1.2, marginBottom: 6, marginLeft: 4 }}>{sec.title}</div>
+          <div style={{ background: "rgba(126,200,200,0.04)", border: "1px solid rgba(126,200,200,0.08)", borderRadius: 14, overflow: "hidden" }}>
+            {sec.items.map((item, i) => (
+              <div key={item.label} onClick={item.action} style={{
+                display: "flex", justifyContent: "space-between", alignItems: "center", padding: 14, cursor: item.action ? "pointer" : "default",
+                borderBottom: i < sec.items.length - 1 ? "1px solid rgba(126,200,200,0.06)" : "none",
+                background: item.hl ? "rgba(240,198,116,0.05)" : "transparent",
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <span style={{ fontSize: 18 }}>{item.emoji}</span>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 500, color: item.hl ? GOLD : TEXT }}>{item.label}</div>
+                    {item.value && <div style={{ fontSize: 11, color: MUTED, marginTop: 1 }}>{item.value}</div>}
+                  </div>
+                </div>
+                {item.action && <span style={{ fontSize: 20, color: MUTED }}>›</span>}
+                {item.badge && <span style={{ fontSize: 8, fontWeight: 700, color: GOLD, background: "rgba(240,198,116,0.12)", padding: "2px 6px", borderRadius: 4, letterSpacing: 1 }}>{item.badge}</span>}
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+      <p style={{ fontSize: 11, color: MUTED, textAlign: "center", lineHeight: 1.7 }}>Made with 💕 for women who glow<br/>AquaBloom © 2026</p>
+    </div>
+  );
+}
+
+function OnboardingScreen({ onDone }) {
+  const [idx, setIdx] = useState(0);
+  const s = ONBOARDING[idx];
+  const isLast = idx === ONBOARDING.length - 1;
+  return (
+    <div style={{ display: "flex", flexDirection: "column", height: "100%", background: `linear-gradient(160deg, ${BG}, #151b26, #1a1525)`, position: "relative" }}>
+      {!isLast && <button onClick={onDone} style={{ position: "absolute", top: 16, right: 16, background: "none", border: "none", color: MUTED, fontSize: 13, cursor: "pointer", zIndex: 2 }}>Skip</button>}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "0 30px" }}>
+        <div style={{ fontSize: 64, marginBottom: 24 }}>{s.emoji}</div>
+        <div style={{ fontSize: 26, fontWeight: 300, color: TEXT, textAlign: "center", letterSpacing: 0.5, marginBottom: 12 }}>{s.title}</div>
+        <div style={{ fontSize: 14, color: SUBTLE, textAlign: "center", lineHeight: 1.6 }}>{s.sub}</div>
+      </div>
+      <div style={{ padding: "0 30px 40px", display: "flex", flexDirection: "column", alignItems: "center", gap: 24 }}>
+        <div style={{ display: "flex", gap: 6 }}>
+          {ONBOARDING.map((_, i) => <div key={i} style={{ width: i===idx ? 20 : 6, height: 6, borderRadius: 3, background: TEAL, opacity: i===idx ? 1 : 0.3, transition: "all 0.3s" }} />)}
+        </div>
+        <button onClick={() => isLast ? onDone() : setIdx(idx+1)} style={{
+          width: "100%", padding: 14, borderRadius: 20, border: "none", cursor: "pointer", fontSize: 15, fontWeight: 600, color: "#fff", letterSpacing: 0.5,
+          background: `linear-gradient(135deg, ${TEAL}, ${LAVENDER})`,
+        }}>{isLast ? "Get Started" : "Next"}</button>
+      </div>
+    </div>
+  );
+}
+
+function PaywallScreen({ onClose }) {
+  const [plan, setPlan] = useState("yearly");
+  return (
+    <div style={{ height: "100%", overflow: "auto", background: BG }}>
+      <div style={{ padding: "0 20px 30px" }}>
+        <div style={{ display: "flex", justifyContent: "flex-end", paddingTop: 12 }}>
+          <button onClick={onClose} style={{ width: 32, height: 32, borderRadius: 16, background: "rgba(255,255,255,0.08)", border: "none", color: MUTED, fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
+        </div>
+        <div style={{ textAlign: "center", padding: "20px 0" }}>
+          <div style={{ fontSize: 48 }}>✨</div>
+          <div style={{ fontSize: 28, fontWeight: 300, color: TEXT, marginTop: 12 }}>AquaBloom Premium</div>
+          <div style={{ fontSize: 14, color: SUBTLE, marginTop: 6 }}>Unlock your full hydration potential</div>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 20 }}>
+          {PREMIUM_FEATURES.map((f,i) => (
+            <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+              <span style={{ fontSize: 20 }}>{f.icon}</span>
+              <div><div style={{ fontSize: 13, fontWeight: 600, color: TEXT }}>{f.title}</div><div style={{ fontSize: 11, color: MUTED, marginTop: 1 }}>{f.desc}</div></div>
+            </div>
+          ))}
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, background: "rgba(126,200,200,0.06)", border: "1px solid rgba(126,200,200,0.1)", borderRadius: 14, padding: 14, marginBottom: 20 }}>
+          <span style={{ fontSize: 18 }}>🚫</span>
+          <span style={{ fontSize: 12, fontWeight: 500, color: TEAL, lineHeight: 1.5 }}>Plus: Remove all ads for a clean, distraction-free experience</span>
+        </div>
+        <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
+          {[
+            { key: "yearly", name: "Yearly", price: "$29.99", period: "per year", save: "Save 37%", trial: "7-day free trial", best: true },
+            { key: "monthly", name: "Monthly", price: "$3.99", period: "per month", trial: "7-day free trial" },
+          ].map(p => (
+            <button key={p.key} onClick={() => setPlan(p.key)} style={{
+              flex: 1, textAlign: "center", padding: "16px 8px", borderRadius: 14,
+              border: `2px solid ${plan===p.key ? TEAL : "rgba(126,200,200,0.1)"}`,
+              background: plan===p.key ? "rgba(126,200,200,0.06)" : "rgba(126,200,200,0.03)",
+              cursor: "pointer", position: "relative",
+            }}>
+              {p.best && <span style={{ position: "absolute", top: -8, left: "50%", transform: "translateX(-50%)", fontSize: 8, fontWeight: 700, color: "#fff", background: TEAL, padding: "2px 8px", borderRadius: 6, letterSpacing: 1 }}>BEST VALUE</span>}
+              <div style={{ fontSize: 12, fontWeight: 600, color: SUBTLE }}>{p.name}</div>
+              <div style={{ fontSize: 24, fontWeight: 300, color: TEXT, margin: "4px 0 2px" }}>{p.price}</div>
+              <div style={{ fontSize: 11, color: MUTED }}>{p.period}</div>
+              {p.save && <div style={{ fontSize: 11, fontWeight: 600, color: TEAL, marginTop: 4 }}>{p.save}</div>}
+              <div style={{ fontSize: 10, color: LAVENDER, marginTop: 3 }}>{p.trial}</div>
+            </button>
+          ))}
+        </div>
+        <button style={{
+          width: "100%", padding: 14, borderRadius: 20, border: "none", cursor: "pointer",
+          fontSize: 15, fontWeight: 700, color: "#fff", letterSpacing: 0.5,
+          background: `linear-gradient(90deg, ${TEAL}, ${LAVENDER}, ${ROSE})`,
+        }}>Start Free Trial</button>
+        <p style={{ fontSize: 10, color: MUTED, textAlign: "center", lineHeight: 1.5, marginTop: 12 }}>
+          Cancel anytime. No charge during your free trial.<br/>
+          Subscription auto-renews unless canceled 24 hours before period end.
+        </p>
+        <button style={{ display: "block", margin: "8px auto", background: "none", border: "none", color: MUTED, fontSize: 12, textDecoration: "underline", cursor: "pointer" }}>Restore Purchases</button>
+      </div>
+    </div>
+  );
+}
+
+function AquaBloomMockup() {
+  const [screen, setScreen] = useState("onboarding");
+  const [tab, setTab] = useState("home");
+  const [intake, setIntake] = useState(0);
+  const [log, setLog] = useState([]);
+  const [goalReached, setGoalReached] = useState(false);
+  const [showCel, setShowCel] = useState(false);
+  const affIdx = useRef(Math.floor(Math.random() * AFFIRMATIONS.length));
+
+  const addWater = (ml) => {
+    const now = new Date();
+    const time = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    setIntake(p => {
+      const n = p + ml;
+      if (n >= GOAL_ML && !goalReached) { setGoalReached(true); setShowCel(true); setTimeout(() => setShowCel(false), 2500); }
+      return n;
+    });
+    setLog(p => [{ ml, time, id: Date.now() }, ...p]);
+    affIdx.current = (affIdx.current + 1) % AFFIRMATIONS.length;
+  };
+
+  const undoLast = () => {
+    if (!log.length) return;
+    setIntake(p => Math.max(0, p - log[0].ml));
+    setLog(p => p.slice(1));
+    if (intake - (log[0]?.ml || 0) < GOAL_ML) setGoalReached(false);
+  };
+
+  const resetDay = () => { setIntake(0); setLog([]); setGoalReached(false); };
+
+  const tabs = [
+    { id: "home", icon: "💧", label: "Hydrate" },
+    { id: "reminders", icon: "🔔", label: "Reminders" },
+    { id: "history", icon: "📊", label: "History" },
+    { id: "settings", icon: "⚙️", label: "Settings" },
+  ];
+
+  return (
+    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(160deg, #080b10, #0d1117, #12101c)", padding: 20, fontFamily: "system-ui, -apple-system, sans-serif" }}>
+      <div style={{
+        width: "100%", maxWidth: 390, height: 780, background: BG2,
+        borderRadius: 40, border: "1px solid rgba(126,200,200,0.08)",
+        boxShadow: "0 20px 80px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.03)",
+        display: "flex", flexDirection: "column", overflow: "hidden", position: "relative",
+      }}>
+        <div style={{ display: "flex", justifyContent: "center", paddingTop: 8, zIndex: 10 }}>
+          <div style={{ width: 120, height: 28, borderRadius: 14, background: "#000" }} />
+        </div>
+
+        {screen === "onboarding" && <OnboardingScreen onDone={() => setScreen("app")} />}
+        {screen === "paywall" && <PaywallScreen onClose={() => setScreen("app")} />}
+        {screen === "app" && (
+          <>
+            <div style={{ flex: 1, overflow: "auto", display: "flex", flexDirection: "column" }}>
+              {tab === "home" && <HomeTab intake={intake} log={log} addWater={addWater} undoLast={undoLast} affIdx={affIdx.current} setScreen={setScreen} />}
+              {tab === "reminders" && <RemindersTab />}
+              {tab === "history" && <HistoryTab intake={intake} log={log} resetDay={resetDay} setScreen={setScreen} />}
+              {tab === "settings" && <SettingsTab setScreen={setScreen} />}
+            </div>
+
+            <div style={{
+              display: "flex", justifyContent: "space-around", padding: "8px 6px 16px",
+              borderTop: "1px solid rgba(126,200,200,0.06)", background: "rgba(18,22,30,0.98)",
+            }}>
+              {tabs.map(t => (
+                <button key={t.id} onClick={() => setTab(t.id)} style={{
+                  display: "flex", flexDirection: "column", alignItems: "center", gap: 2,
+                  background: "none", border: "none", cursor: "pointer", padding: "4px 14px", position: "relative",
+                }}>
+                  <span style={{ fontSize: 18, opacity: tab === t.id ? 1 : 0.4 }}>{t.icon}</span>
+                  <span style={{ fontSize: 9, color: tab === t.id ? TEAL : MUTED, fontWeight: tab === t.id ? 600 : 400, letterSpacing: 0.5 }}>{t.label}</span>
+                  {tab === t.id && <div style={{ position: "absolute", bottom: -4, width: 14, height: 2.5, borderRadius: 2, background: `linear-gradient(90deg, ${TEAL}, ${LAVENDER})` }} />}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+
+        {showCel && (
+          <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.7)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 50, borderRadius: 40 }}>
+            <div style={{ textAlign: "center" }}>
+              <div style={{ fontSize: 56 }}>🎉</div>
+              <div style={{ fontSize: 24, fontWeight: 300, color: "#fff", marginTop: 10 }}>Goal Reached!</div>
+              <div style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", marginTop: 6 }}>You're absolutely radiant today ✨</div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.render(<AquaBloomMockup />, document.getElementById("root"));
+  </script>
+</body>
+</html>
