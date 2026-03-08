@@ -2,20 +2,18 @@
 // AquaBloom Analytics Configuration (PostHog)
 // ─────────────────────────────────────────────────
 //
-// PostHog gives you product analytics, session replay,
-// feature flags, and A/B testing — all in one platform.
-//
-// FREE TIER: 1 million events/month (very generous for a new app)
-//
-// SETUP:
-// 1. Sign up at https://posthog.com (free)
-// 2. Create a project → copy your API key
-// 3. Replace POSTHOG_API_KEY below with your real key
-// 4. (Optional) If self-hosting, update POSTHOG_HOST
+// API key and host are loaded from app.config.js extras via expo-constants.
+// Set POSTHOG_API_KEY and POSTHOG_HOST in your .env file.
+// @see https://posthog.com/docs/libraries/react-native
 // ─────────────────────────────────────────────────
 
-export const POSTHOG_API_KEY = 'phc_REPLACE_WITH_YOUR_POSTHOG_API_KEY';
-export const POSTHOG_HOST = 'https://us.i.posthog.com'; // or https://eu.i.posthog.com for EU
+import Constants from 'expo-constants';
+
+export const POSTHOG_API_KEY =
+  (Constants.expoConfig?.extra?.posthogApiKey as string | undefined) ?? '';
+export const POSTHOG_HOST =
+  (Constants.expoConfig?.extra?.posthogHost as string | undefined) ||
+  'https://us.i.posthog.com';
 
 // ─────────────────────────────────────────────────
 // Event Names — centralized so you never have typos
@@ -44,6 +42,7 @@ export const ANALYTICS_EVENTS = {
   NOTIFICATIONS_PERMISSION_DENIED: 'notifications_permission_denied',
 
   // Premium / Monetization
+  UPGRADE_BANNER_TAPPED: 'upgrade_banner_tapped',
   PAYWALL_VIEWED: 'paywall_viewed',
   PAYWALL_DISMISSED: 'paywall_dismissed',
   PLAN_SELECTED: 'plan_selected',

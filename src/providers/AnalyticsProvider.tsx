@@ -3,12 +3,38 @@
 // Wraps the app and initializes PostHog on startup
 // ─────────────────────────────────────────────────
 
-import React, { createContext, useContext, useEffect, useRef } from 'react';
+import React, { createContext, useContext } from 'react';
 import PostHog, { PostHogProvider as PHProvider } from 'posthog-react-native';
-import { POSTHOG_API_KEY, POSTHOG_HOST, ANALYTICS_EVENTS } from '../config/analytics';
+import { POSTHOG_API_KEY, POSTHOG_HOST } from '../config/analytics';
 
-// Create our own context for the PostHog client
-const AnalyticsContext = createContext<PostHog | null>(null);
+const isConfigured = Boolean(POSTHOG_API_KEY);
+
+// Singleton PostHog client — created once at module load time so it is
+// available synchronously during the first render (matches the Expo example pattern).
+const posthogClient = new PostHog(POSTHOG_API_KEY || 'placeholder_key', {
+  host: POSTHOG_HOST,
+  // Disable analytics entirely when no key is present (dev without .env)
+  disabled: !isConfigured,
+  // Capture Application Installed / Opened / Backgrounded / etc. automatically
+  captureAppLifecycleEvents: true,
+  // Screen tracking is done manually via posthog.screen() in the layout
+  captureScreens: false,
+  // Batching for battery efficiency
+  flushAt: 20,
+  flushInterval: 10000,
+  maxBatchSize: 100,
+  maxQueueSize: 1000,
+  // Feature flags
+  preloadFeatureFlags: true,
+  // Enable verbose logging in dev
+  debug: __DEV__ && isConfigured,
+});
+
+// Expose the raw client for components that need it (e.g. screen tracking)
+export { posthogClient };
+
+// Create our own context so useAnalytics can access the client safely
+const AnalyticsContext = createContext<PostHog | null>(isConfigured ? posthogClient : null);
 
 export function usePostHogClient(): PostHog | null {
   return useContext(AnalyticsContext);
@@ -19,38 +45,10 @@ interface AnalyticsProviderProps {
 }
 
 export default function AnalyticsProvider({ children }: AnalyticsProviderProps) {
-  const clientRef = useRef<PostHog | null>(null);
-
-  useEffect(() => {
-    // Don't initialize if using placeholder key
-    if (POSTHOG_API_KEY.includes('REPLACE')) {
-      console.log('[Analytics] PostHog not initialized — replace POSTHOG_API_KEY in src/config/analytics.ts');
-      return;
+  if (!isConfigured) {
+    if (__DEV__) {
+      console.log('[Analytics] PostHog not initialized — set POSTHOG_API_KEY in .env');
     }
-
-    const client = new PostHog(POSTHOG_API_KEY, {
-      host: POSTHOG_HOST,
-      // Flush events every 30 seconds or when 20 events queue up
-      flushAt: 20,
-      flushInterval: 30000,
-      // Capture app lifecycle events automatically
-      captureNativeAppLifecycleEvents: true,
-      // Enable screen auto-tracking (works with react-navigation / expo-router)
-      captureScreens: true,
-    });
-
-    clientRef.current = client;
-
-    // Track app open
-    client.capture(ANALYTICS_EVENTS.APP_OPENED);
-
-    return () => {
-      client.flush();
-    };
-  }, []);
-
-  // If PostHog isn't configured yet, still render children (app works without analytics)
-  if (POSTHOG_API_KEY.includes('REPLACE') || !clientRef.current) {
     return (
       <AnalyticsContext.Provider value={null}>
         {children}
@@ -59,8 +57,15 @@ export default function AnalyticsProvider({ children }: AnalyticsProviderProps) 
   }
 
   return (
-    <PHProvider client={clientRef.current}>
-      <AnalyticsContext.Provider value={clientRef.current}>
+    <PHProvider
+      client={posthogClient}
+      autocapture={{
+        captureScreens: false, // Manual screen tracking via posthog.screen()
+        captureTouches: true,
+        propsToCapture: ['testID'],
+      }}
+    >
+      <AnalyticsContext.Provider value={posthogClient}>
         {children}
       </AnalyticsContext.Provider>
     </PHProvider>

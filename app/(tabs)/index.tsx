@@ -152,7 +152,7 @@ export default function HomeScreen() {
         )}
 
         {/* Premium upsell — only show for free users */}
-        {!isPremium && <TouchableOpacity onPress={() => router.push('/paywall')} style={s.premBanner}>
+        {!isPremium && <TouchableOpacity onPress={() => { track(EVENTS.UPGRADE_BANNER_TAPPED, { source: 'home' }); router.push('/paywall'); }} style={s.premBanner}>
           <LinearGradient colors={['rgba(240,198,116,0.08)', 'rgba(196,167,215,0.08)']}
             start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={s.premGrad}>
             <Text style={{ fontSize: 24 }}>✨</Text>
