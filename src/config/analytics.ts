@@ -60,6 +60,11 @@ export const ANALYTICS_EVENTS = {
   AD_IMPRESSION: 'ad_impression',
   AD_CLICKED: 'ad_clicked',
 
+  // Gamification
+  BLOOM_POINTS_EARNED: 'bloom_points_earned',
+  PLANT_STAGE_REACHED: 'plant_stage_reached',
+  PLANT_GROWTH_RESET: 'plant_growth_reset',
+
   // App Lifecycle
   APP_OPENED: 'app_opened',
   APP_BACKGROUNDED: 'app_backgrounded',
@@ -77,4 +82,6 @@ export const USER_PROPERTIES = {
   ONBOARDING_COMPLETED: 'onboarding_completed',
   APP_VERSION: 'app_version',
   INSTALL_DATE: 'install_date',
+  BLOOM_POINTS_TOTAL: 'bloom_points_total',
+  PLANT_SPECIES: 'plant_species',
 } as const;

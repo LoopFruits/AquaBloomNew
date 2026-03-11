@@ -28,30 +28,30 @@ export const DEFAULT_REMINDERS = [
   { id: 'r8', time: '21:00', label: 'Before Bed', emoji: '💤', active: false },
 ];
 
-// Affirmations (women-focused wellness messaging)
+// Affirmations (universal motivational messaging)
 export const AFFIRMATIONS = [
-  "You're glowing from the inside out ✨",
-  "Hydration is self-love in action 💕",
-  "Your body thanks you, beautiful 🌸",
-  "Sip by sip, you're thriving 🌿",
-  "Radiant skin starts with water 💧",
-  "Keep going, gorgeous! Almost there 🌷",
-  "Water is your superpower 💪",
-  "Nourishing yourself is never selfish 🦋",
-  "Every drop is an act of self-care 🌺",
-  "You deserve to feel amazing today 💫",
-  "Healthy habits, beautiful results 🌻",
-  "Your wellness journey is inspiring 🌈",
+  "Every sip fuels your day 💧",
+  "Hydration is your superpower 💪",
+  "Your body thanks you 🌿",
+  "Keep the streak alive! 🔥",
+  "Sip by sip, you're thriving 🌱",
+  "Water is progress in motion ✨",
+  "Stay consistent, stay strong 💫",
+  "Your plant is growing! 🌸",
+  "One more glass, you've got this 🥤",
+  "Nourishing yourself is never wasted 🌻",
+  "Hydration = energy + focus 🧠",
+  "You're building a great habit 🏆",
 ];
 
 // Notification messages (for push notifications)
 export const NOTIFICATION_MESSAGES = [
-  { title: 'Time to hydrate! 💧', body: "Your body is craving some water. Take a sip, you deserve it!" },
-  { title: 'Water break! 🌸', body: "A quick sip now keeps you glowing all day." },
-  { title: 'Hey gorgeous! ✨', body: "Don't forget to drink some water. Your skin will thank you!" },
-  { title: 'Hydration check! 🌿', body: "Feeling tired? Water might be just what you need." },
-  { title: 'Self-care reminder 💕', body: "Take a moment for yourself and drink some water." },
-  { title: 'Glow time! 🌷', body: "Water is the best beauty secret. Take a sip!" },
+  { title: 'Time to hydrate! 💧', body: "Your plant needs watering — take a sip!" },
+  { title: 'Water break! 🌿', body: "A quick sip now keeps your streak alive." },
+  { title: "Don't forget to drink! ✨", body: "Your plant is getting thirsty." },
+  { title: 'Hydration check! 🌱', body: "Feeling tired? Water might be just what you need." },
+  { title: 'Keep it going! 💪', body: "You're building something great, sip by sip." },
+  { title: 'Almost there! 🏆', body: "A few more glasses to hit today's goal." },
 ];
 
 // Premium features list (for paywall)
@@ -67,14 +67,14 @@ export const PREMIUM_FEATURES = [
     description: 'Weekly & monthly hydration trends with insights',
   },
   {
-    icon: '🎨',
-    title: 'Custom Themes',
-    description: 'Unlock beautiful themes: Rose Garden, Ocean Breeze, Lavender Fields',
+    icon: '🌿',
+    title: 'Plant Collection',
+    description: 'Unlock premium plants: Sakura, Monstera, Succulent & more',
   },
   {
     icon: '🏆',
     title: 'Streak Rewards',
-    description: 'Earn badges and celebrate your hydration milestones',
+    description: 'Earn Bloom Points, unlock badges, and protect your streak with Streak Freeze',
   },
   {
     icon: '🤝',
@@ -135,6 +135,8 @@ export const STORAGE_KEYS = {
   STREAK: '@aquabloom_streak',
   HISTORY: '@aquabloom_history',
   IS_PREMIUM: '@aquabloom_is_premium',
+  BLOOM_POINTS: '@aquabloom_bloom_points',
+  PLANT_STATE: '@aquabloom_plant_state',
 };
 
 // Onboarding slides
@@ -142,7 +144,7 @@ export const ONBOARDING_SLIDES = [
   {
     key: 'welcome',
     title: 'Welcome to AquaBloom',
-    subtitle: 'Your personal hydration companion, designed for the modern woman',
+    subtitle: 'Your personal hydration companion — grow plants, earn points, stay hydrated',
     emoji: '🌸',
   },
   {
@@ -152,15 +154,21 @@ export const ONBOARDING_SLIDES = [
     emoji: '💧',
   },
   {
+    key: 'grow',
+    title: 'Grow Your Plant',
+    subtitle: 'Every sip helps your plant bloom. Hit your daily goal to watch it reach full flower 🌱',
+    emoji: '🪴',
+  },
+  {
     key: 'remind',
     title: 'Gentle Reminders',
-    subtitle: 'Never forget to hydrate with beautiful, customizable notifications',
+    subtitle: 'Never forget to hydrate with customizable notifications throughout your day',
     emoji: '🔔',
   },
   {
-    key: 'glow',
-    title: 'Glow From Within',
-    subtitle: "Stay consistent, build streaks, and watch your skin, energy, and mood transform",
-    emoji: '✨',
+    key: 'streak',
+    title: 'Build Your Streak',
+    subtitle: 'Stay consistent, earn Bloom Points, and level up your hydration game',
+    emoji: '🔥',
   },
 ];

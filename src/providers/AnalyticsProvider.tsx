@@ -16,9 +16,8 @@ const posthogClient = new PostHog(POSTHOG_API_KEY || 'placeholder_key', {
   // Disable analytics entirely when no key is present (dev without .env)
   disabled: !isConfigured,
   // Capture Application Installed / Opened / Backgrounded / etc. automatically
-  captureAppLifecycleEvents: true,
+  captureNativeAppLifecycleEvents: true,
   // Screen tracking is done manually via posthog.screen() in the layout
-  captureScreens: false,
   // Batching for battery efficiency
   flushAt: 20,
   flushInterval: 10000,
@@ -27,7 +26,7 @@ const posthogClient = new PostHog(POSTHOG_API_KEY || 'placeholder_key', {
   // Feature flags
   preloadFeatureFlags: true,
   // Enable verbose logging in dev
-  debug: __DEV__ && isConfigured,
+  ...((__DEV__ && isConfigured) ? { debug: true } as any : {}),
 });
 
 // Expose the raw client for components that need it (e.g. screen tracking)

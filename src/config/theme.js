@@ -1,5 +1,5 @@
 // AquaBloom Design System
-// Women-focused, elegant color palette with soft gradients
+// Elegant color palette with soft gradients
 
 export const COLORS = {
   // Primary palette
