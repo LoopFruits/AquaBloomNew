@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AquaBloom — Hydrate & Glow</title>
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --teal: #7ec8c8; --lavender: #c4a7d7; --rose: #f0a6b9; --gold: #f0c674;
+            --bg: #0d1117; --bg2: #12161e; --bg3: #151b26;
+            --text: #e8eaed; --muted: #6b7280; --subtle: #9ba3af;
+        }
+        html { scroll-behavior: smooth; }
+        body {
+            background: var(--bg); color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            overflow-x: hidden;
+        }
+        /* ── NAV ── */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 18px 48px; background: rgba(13,17,23,0.85);
+            backdrop-filter: blur(16px); border-bottom: 1px solid rgba(126,200,200,0.06);
+        }
+        .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .nav-logo-icon { font-size: 22px; }
+        .nav-logo-text { font-size: 18px; font-weight: 300; color: var(--teal); letter-spacing: 1px; }
+        .nav-links { display: flex; gap: 32px; list-style: none; }
+        .nav-links a { color: var(--subtle); text-decoration: none; font-size: 14px; transition: color .2s; }
+        .nav-links a:hover { color: var(--teal); }
+        .nav-cta {
+            background: linear-gradient(135deg, var(--teal), var(--lavender));
+            color: #fff; border: none; padding: 10px 22px; border-radius: 20px;
+            font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none;
+            letter-spacing: 0.3px; transition: opacity .2s, transform .2s;
+        }
+        .nav-cta:hover { opacity: .88; transform: translateY(-1px); }
+        /* ── HERO ── */
+        .hero {
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            padding: 100px 24px 60px; position: relative; overflow: hidden;
+        }
+        .hero-bg-orb { position: absolute; border-radius: 50%; pointer-events: none; }
+        .orb1 {
+            width: 500px; height: 500px; top: -100px; right: -100px;
+            background: radial-gradient(circle, rgba(126,200,200,0.08) 0%, transparent 70%);
+        }
+        .orb2 {
+            width: 400px; height: 400px; bottom: 0; left: -80px;
+            background: radial-gradient(circle, rgba(196,167,215,0.07) 0%, transparent 70%);
+        }
+        .orb3 {
+            width: 300px; height: 300px; top: 40%; right: 15%;
+            background: radial-gradient(circle, rgba(240,166,185,0.06) 0%, transparent 70%);
+        }
+        .hero-inner {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 60px; max-width: 1100px; width: 100%; z-index: 1;
+        }
+        .hero-text { flex: 1; max-width: 520px; }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 7px;
+            background: rgba(126,200,200,0.08); border: 1px solid rgba(126,200,200,0.15);
+            border-radius: 20px; padding: 6px 14px; font-size: 12px; color: var(--teal);
+            font-weight: 600; letter-spacing: 0.5px; margin-bottom: 24px;
+        }
+        .hero-title {
+            font-size: clamp(40px, 6vw, 64px); font-weight: 200; line-height: 1.15;
+            letter-spacing: -0.5px; color: var(--text); margin-bottom: 20px;
+        }
+        .hero-title span {
+            background: linear-gradient(135deg, var(--teal), var(--lavender), var(--rose));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .hero-sub {
+            font-size: 17px; color: var(--muted); line-height: 1.7;
+            margin-bottom: 36px; max-width: 440px;
+        }
+        .hero-btns { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+        .btn-primary {
+            display: flex; align-items: center; gap: 8px;
+            background: linear-gradient(135deg, var(--teal), var(--lavender));
+            color: #fff; padding: 14px 28px; border-radius: 28px; font-size: 15px;
+            font-weight: 600; text-decoration: none; transition: transform .2s, box-shadow .2s;
+            box-shadow: 0 8px 32px rgba(126,200,200,0.25);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(126,200,200,0.35); }
+        .btn-secondary {
+            display: flex; align-items: center; gap: 8px;
+            background: rgba(126,200,200,0.06); border: 1px solid rgba(126,200,200,0.15);
+            color: var(--teal); padding: 14px 28px; border-radius: 28px; font-size: 15px;
+            font-weight: 600; text-decoration: none; transition: background .2s, transform .2s;
+        }
+        .btn-secondary:hover { background: rgba(126,200,200,0.1); transform: translateY(-2px); }
+        .hero-note { font-size: 12px; color: var(--muted); margin-top: 16px; }
+        /* ── PHONE MOCKUP ── */
+        .hero-phone { animation: float 4s ease-in-out infinite; }
+        @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+        .hero-phone {
+            flex-shrink: 0; width: 260px; height: 520px; background: var(--bg2);
+            border-radius: 36px; border: 1px solid rgba(126,200,200,0.1);
+            box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.02), 0 0 80px rgba(126,200,200,0.06);
+            overflow: hidden; position: relative; display: flex; flex-direction: column;
+        }
+        .phone-notch { display: flex; justify-content: center; padding-top: 8px; flex-shrink: 0; }
+        .phone-notch-bar { width: 90px; height: 22px; background: #000; border-radius: 11px; }
+        .phone-screen { flex: 1; padding: 12px 14px 0; overflow: hidden; }
+        .phone-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .phone-app-name { font-size: 16px; font-weight: 300; color: var(--teal); letter-spacing: 0.5px; }
+        .phone-date { font-size: 9px; color: var(--muted); }
+        /* Animated ring */
+        .ring-wrap { display: flex; justify-content: center; margin-bottom: 8px; position: relative; }
+        .ring-wrap svg { display: block; }
+        .ring-center {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center;
+        }
+        .ring-pct { font-size: 28px; font-weight: 200; color: var(--text); line-height: 1; }
+        .ring-ml { font-size: 10px; font-weight: 600; color: var(--teal); margin-top: 2px; }
+        .ring-plant { font-size: 28px; margin-bottom: 2px; animation: sway 3s ease-in-out infinite; }
+        @keyframes sway { 0%,100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
+        .phone-affirmation { text-align: center; font-size: 9px; color: var(--lavender); font-style: italic; margin-bottom: 10px; }
+        .phone-stats {
+            display: flex; justify-content: space-around; background: rgba(126,200,200,0.04);
+            border: 1px solid rgba(126,200,200,0.08); border-radius: 10px; padding: 8px 4px; margin-bottom: 10px;
+        }
+        .phone-stat { text-align: center; }
+        .phone-stat-val { font-size: 14px; font-weight: 300; color: var(--text); }
+        .phone-stat-lbl { font-size: 7px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 1px; }
+        .phone-divider { width: 1px; background: rgba(126,200,200,0.08); }
+        .phone-quick-add-label { font-size: 8px; font-weight: 600; color: var(--subtle); letter-spacing: 1px; margin-bottom: 6px; }
+        .phone-quick-add { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 10px; }
+        .phone-qa-btn {
+            display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 4px;
+            background: rgba(126,200,200,0.05); border: 1px solid rgba(126,200,200,0.1);
+            border-radius: 10px; cursor: pointer; transition: transform .15s;
+        }
+        .phone-qa-btn:hover { transform: scale(1.04); }
+        .phone-qa-btn span:first-child { font-size: 14px; }
+        .phone-qa-label { font-size: 8px; color: var(--text); font-weight: 500; }
+        .phone-qa-ml { font-size: 7px; color: var(--teal); font-weight: 600; }
+        /* Animated ring progress */
+        #ring-progress { stroke-dashoffset: 440; animation: fillRing 2.5s ease forwards 0.5s; }
+        @keyframes fillRing { to { stroke-dashoffset: 176; } /* ~60% */ }
+        /* ── SOCIAL PROOF ── */
+        .social-proof {
+            display: flex; gap: 32px; flex-wrap: wrap; align-items: center; justify-content: center;
+            padding: 32px 24px; border-top: 1px solid rgba(126,200,200,0.06);
+            border-bottom: 1px solid rgba(126,200,200,0.06);
+        }
+        .proof-item { display: flex; align-items: center; gap: 10px; }
+        .proof-icon { font-size: 22px; }
+        .proof-val { font-size: 20px; font-weight: 200; color: var(--text); }
+        .proof-lbl { font-size: 12px; color: var(--muted); }
+        /* ── SECTIONS ── */
+        section { padding: 100px 24px; }
+        .section-inner { max-width: 1100px; margin: 0 auto; }
+        .section-tag {
+            display: inline-block; font-size: 11px; font-weight: 700; color: var(--teal);
+            letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px;
+        }
+        .section-title {
+            font-size: clamp(28px, 4vw, 44px); font-weight: 200; line-height: 1.2; margin-bottom: 16px;
+        }
+        .section-sub { font-size: 16px; color: var(--muted); line-height: 1.7; max-width: 500px; }
+        /* ── HOW IT WORKS ── */
+        .steps {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 24px; margin-top: 56px;
+        }
+        .step {
+            background: rgba(126,200,200,0.03); border: 1px solid rgba(126,200,200,0.08);
+            border-radius: 20px; padding: 28px 24px; position: relative; overflow: hidden;
+            transition: border-color .3s, transform .3s;
+        }
+        .step:hover { border-color: rgba(126,200,200,0.2); transform: translateY(-4px); }
+        .step-num { font-size: 11px; font-weight: 700; color: var(--teal); letter-spacing: 2px; margin-bottom: 16px; }
+        .step-icon { font-size: 36px; margin-bottom: 14px; }
+        .step-title { font-size: 17px; font-weight: 500; color: var(--text); margin-bottom: 8px; }
+        .step-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+        /* ── FEATURES ── */
+        .features-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 56px; }
+        .feature-card {
+            background: rgba(126,200,200,0.03); border: 1px solid rgba(126,200,200,0.08);
+            border-radius: 20px; padding: 26px; transition: border-color .3s, transform .3s;
+        }
+        .feature-card:hover { border-color: rgba(126,200,200,0.18); transform: translateY(-3px); }
+        .feature-card.featured {
+            grid-column: span 2; background: linear-gradient(135deg, rgba(126,200,200,0.06), rgba(196,167,215,0.06));
+            border-color: rgba(126,200,200,0.12);
+        }
+        .feature-icon { font-size: 28px; margin-bottom: 14px; }
+        .feature-title { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+        .feature-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+        .feature-tag {
+            display: inline-block; font-size: 9px; font-weight: 700; color: var(--gold);
+            background: rgba(240,198,116,0.12); padding: 3px 8px; border-radius: 6px;
+            letter-spacing: 1px; margin-top: 10px;
+        }
+        /* ── PLANT SECTION ── */
+        .plant-section { background: rgba(196,167,215,0.03); }
+        .plant-inner {
+            display: flex; align-items: center; gap: 80px; max-width: 1100px; margin: 0 auto;
+        }
+        .plant-text { flex: 1; }
+        .plant-stages { flex-shrink: 0; display: flex; gap: 12px; align-items: flex-end; }
+        .plant-stage { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        .plant-stage-icon { font-size: clamp(20px, 3vw, 36px); transition: transform .3s; }
+        .plant-stage:hover .plant-stage-icon { transform: scale(1.15); }
+        .plant-stage-label { font-size: 10px; color: var(--muted); }
+        .plant-arrow { color: rgba(126,200,200,0.3); font-size: 18px; padding-bottom: 28px; }
+        .plant-bullets { list-style: none; margin-top: 28px; display: flex; flex-direction: column; gap: 14px; }
+        .plant-bullets li { display: flex; align-items: flex-start; gap: 12px; }
+        .plant-bullet-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+        .plant-bullet-text { font-size: 14px; color: var(--muted); line-height: 1.5; }
+        .plant-bullet-text strong { color: var(--text); font-weight: 600; }
+        /* ── PRICING ── */
+        .pricing-cards {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px; margin-top: 56px;
+        }
+        .pricing-card {
+            background: rgba(126,200,200,0.03); border: 2px solid rgba(126,200,200,0.1);
+            border-radius: 24px; padding: 30px 24px; display: flex; flex-direction: column;
+            gap: 6px; transition: border-color .3s, transform .3s; position: relative;
+        }
+        .pricing-card:hover { transform: translateY(-4px); }
+        .pricing-card.highlighted { border-color: var(--teal); background: rgba(126,200,200,0.05); }
+        .pricing-badge {
+            position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+            background: var(--teal); color: #fff; font-size: 9px; font-weight: 700;
+            letter-spacing: 1px; padding: 4px 14px; border-radius: 10px;
+        }
+        .pricing-name { font-size: 13px; font-weight: 600; color: var(--subtle); margin-bottom: 6px; }
+        .pricing-price { font-size: 40px; font-weight: 200; color: var(--text); line-height: 1; }
+        .pricing-period { font-size: 13px; color: var(--muted); }
+        .pricing-trial { font-size: 12px; color: var(--lavender); margin-top: 4px; }
+        .pricing-save { font-size: 12px; font-weight: 600; color: var(--teal); }
+        .pricing-divider { height: 1px; background: rgba(126,200,200,0.08); margin: 18px 0; }
+        .pricing-features { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .pricing-features li { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+        .pricing-features li::before { content: "✓"; color: var(--teal); font-weight: 700; flex-shrink: 0; }
+        .pricing-btn {
+            display: block; text-align: center; margin-top: 22px; padding: 12px;
+            border-radius: 20px; font-size: 14px; font-weight: 600; text-decoration: none;
+            transition: transform .2s, opacity .2s; cursor: pointer; border: none;
+        }
+        .pricing-btn.grad {
+            background: linear-gradient(135deg, var(--teal), var(--lavender));
+            color: #fff; box-shadow: 0 4px 20px rgba(126,200,200,0.2);
+        }
+        .pricing-btn.outline {
+            background: rgba(126,200,200,0.06); border: 1px solid rgba(126,200,200,0.15); color: var(--teal);
+        }
+        .pricing-btn:hover { transform: translateY(-2px); opacity: .9; }
+        /* ── TESTIMONIALS ── */
+        .testimonials {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px; margin-top: 56px;
+        }
+        .testimonial {
+            background: rgba(126,200,200,0.03); border: 1px solid rgba(126,200,200,0.08);
+            border-radius: 20px; padding: 24px;
+        }
+        .testimonial-stars { color: var(--gold); font-size: 13px; margin-bottom: 12px; }
+        .testimonial-text {
+            font-size: 14px; color: var(--subtle); line-height: 1.7;
+            font-style: italic; margin-bottom: 16px;
+        }
+        .testimonial-author { display: flex; align-items: center; gap: 10px; }
+        .testimonial-avatar {
+            width: 34px; height: 34px; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; font-size: 16px;
+        }
+        .testimonial-name { font-size: 13px; font-weight: 600; color: var(--text); }
+        .testimonial-meta { font-size: 11px; color: var(--muted); }
+        /* ── CTA BANNER ── */
+        .cta-banner {
+            background: linear-gradient(135deg, rgba(126,200,200,0.08), rgba(196,167,215,0.08));
+            border-top: 1px solid rgba(126,200,200,0.1); border-bottom: 1px solid rgba(126,200,200,0.1);
+            text-align: center; padding: 80px 24px;
+        }
+        .cta-banner h2 { font-size: clamp(28px, 4vw, 44px); font-weight: 200; margin-bottom: 16px; }
+        .cta-banner p {
+            font-size: 16px; color: var(--muted); max-width: 440px;
+            margin: 0 auto 36px; line-height: 1.7;
+        }
+        .cta-store-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+        .store-btn {
+            display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 12px 22px;
+            text-decoration: none; transition: background .2s, transform .2s;
+        }
+        .store-btn:hover { background: rgba(255,255,255,0.07); transform: translateY(-2px); }
+        .store-btn-icon { font-size: 26px; }
+        .store-btn-sub { font-size: 10px; color: var(--muted); }
+        .store-btn-name { font-size: 15px; font-weight: 600; color: var(--text); }
+        /* ── FOOTER ── */
+        footer {
+            padding: 48px 24px 32px; border-top: 1px solid rgba(126,200,200,0.06);
+        }
+        .footer-inner {
+            max-width: 1100px; margin: 0 auto; display: flex;
+            justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 24px;
+        }
+        .footer-logo { font-size: 16px; font-weight: 300; color: var(--teal); letter-spacing: 1px; }
+        .footer-links { display: flex; gap: 28px; list-style: none; }
+        .footer-links a {
+            font-size: 13px; color: var(--muted); text-decoration: none; transition: color .2s;
+        }
+        .footer-links a:hover { color: var(--teal); }
+        .footer-copy { font-size: 12px; color: var(--muted); }
+        /* ── RESPONSIVE ── */
+        @media (max-width: 768px) {
+            nav { padding: 14px 20px; }
+            .nav-links { display: none; }
+            .hero-inner { flex-direction: column; text-align: center; }
+            .hero-text { max-width: 100%; }
+            .hero-sub { max-width: 100%; margin: 0 auto 32px; }
+            .hero-btns { justify-content: center; }
+            .hero-phone { width: 220px; height: 440px; }
+            .features-grid { grid-template-columns: 1fr; }
+            .feature-card.featured { grid-column: span 1; }
+            .plant-inner { flex-direction: column; }
+            .plant-stages { justify-content: center; }
+            .footer-inner { flex-direction: column; align-items: center; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAV -->
+    <nav>
+        <a href="#" class="nav-logo">
+            <span class="nav-logo-icon">💧</span>
+            <span class="nav-logo-text">AquaBloom</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="#how-it-works">How It Works</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+        </ul>
+        <a href="#download" class="nav-cta">Download Free</a>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-bg-orb orb1"></div>
+        <div class="hero-bg-orb orb2"></div>
+        <div class="hero-bg-orb orb3"></div>
+        <div class="hero-inner">
+            <div class="hero-text">
+                <div class="hero-badge">🌸 Now with Plant Companion & Bloom Points</div>
+                <h1 class="hero-title">
+                    Hydrate.<br/>
+                    Grow.<br/>
+                    <span>Bloom.</span>
+                </h1>
+                <p class="hero-sub">
+                    AquaBloom makes drinking water the best part of your day. Track every sip, grow a virtual plant, earn Bloom Points, and build lasting hydration habits — one glass at a time.
+                </p>
+                <div class="hero-btns">
+                    <a href="#download" class="btn-primary">🍎 App Store</a>
+                    <a href="#download" class="btn-secondary">▶ Google Play</a>
+                </div>
+                <p class="hero-note">Free to download · No account required · iOS & Android</p>
+            </div>
+
+            <!-- Phone Mockup -->
+            <div class="hero-phone">
+                <div class="phone-notch"><div class="phone-notch-bar"></div></div>
+                <div class="phone-screen">
+                    <div class="phone-header">
+                        <div>
+                            <div class="phone-app-name">AquaBloom</div>
+                            <div class="phone-date">Wednesday, March 11</div>
+                        </div>
+                        <svg width="20" height="26" viewBox="0 0 60 78" fill="none">
+                            <defs><clipPath id="wc"><path d="M30 4C30 4 4 35 4 52C4 66.4 15.6 74 30 74C44.4 74 56 66.4 56 52C56 35 30 4 30 4Z"/></clipPath></defs>
+                            <path d="M30 4C30 4 4 35 4 52C4 66.4 15.6 74 30 74C44.4 74 56 66.4 56 52C56 35 30 4 30 4Z" fill="rgba(126,200,200,0.12)" stroke="#7ec8c8" stroke-width="2"/>
+                            <rect clip-path="url(#wc)" x="0" y="32" width="60" height="78" fill="#7ec8c8" opacity="0.4"/>
+                        </svg>
+                    </div>
+
+                    <div class="ring-wrap">
+                        <svg width="150" height="150" style="transform:rotate(-90deg)">
+                            <defs>
+                                <linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#7ec8c8"/>
+                                    <stop offset="50%" stop-color="#c4a7d7"/>
+                                    <stop offset="100%" stop-color="#f0a6b9"/>
+                                </linearGradient>
+                            </defs>
+                            <circle cx="75" cy="75" r="65" fill="none" stroke="rgba(126,200,200,0.12)" stroke-width="8"/>
+                            <circle id="ring-progress" cx="75" cy="75" r="65" fill="none" stroke="url(#rg)" stroke-width="8" stroke-dasharray="440" stroke-linecap="round"/>
+                        </svg>
+                        <div class="ring-center">
+                            <div class="ring-plant">🌸</div>
+                            <div class="ring-pct">60%</div>
+                            <div class="ring-ml">1500 ml</div>
+                        </div>
+                    </div>
+
+                    <p class="phone-affirmation">Sip by sip, you're thriving 🌿</p>
+
+                    <div class="phone-stats">
+                        <div class="phone-stat"><div class="phone-stat-val">4</div><div class="phone-stat-lbl">glasses left</div></div>
+                        <div class="phone-divider"></div>
+                        <div class="phone-stat"><div class="phone-stat-val">6</div><div class="phone-stat-lbl">sips today</div></div>
+                        <div class="phone-divider"></div>
+                        <div class="phone-stat"><div class="phone-stat-val">1000</div><div class="phone-stat-lbl">ml to go</div></div>
+                    </div>
+
+                    <div class="phone-quick-add-label">QUICK ADD</div>
+                    <div class="phone-quick-add">
+                        <div class="phone-qa-btn"><span>🥤</span><span class="phone-qa-label">Small</span><span class="phone-qa-ml">150 ml</span></div>
+                        <div class="phone-qa-btn"><span>💧</span><span class="phone-qa-label">Glass</span><span class="phone-qa-ml">250 ml</span></div>
+                        <div class="phone-qa-btn"><span>🫧</span><span class="phone-qa-label">Bottle</span><span class="phone-qa-ml">350 ml</span></div>
+                        <div class="phone-qa-btn"><span>💦</span><span class="phone-qa-label">Large</span><span class="phone-qa-ml">500 ml</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SOCIAL PROOF -->
+    <div class="social-proof">
+        <div class="proof-item">
+            <span class="proof-icon">⭐</span>
+            <div><div class="proof-val">4.9</div><div class="proof-lbl">App Store Rating</div></div>
+        </div>
+        <div class="proof-item">
+            <span class="proof-icon">💧</span>
+            <div><div class="proof-val">2M+</div><div class="proof-lbl">Daily Sips Logged</div></div>
+        </div>
+        <div class="proof-item">
+            <span class="proof-icon">🔥</span>
+            <div><div class="proof-val">500K+</div><div class="proof-lbl">Active Streaks</div></div>
+        </div>
+        <div class="proof-item">
+            <span class="proof-icon">🌸</span>
+            <div><div class="proof-val">1M+</div><div class="proof-lbl">Plants Bloomed</div></div>
+        </div>
+    </div>
+
+    <!-- HOW IT WORKS -->
+    <section id="how-it-works">
+        <div class="section-inner">
+            <span class="section-tag">How It Works</span>
+            <h2 class="section-title">Simple, beautiful, effective</h2>
+            <p class="section-sub">No complicated setup. Just open the app and start hydrating in seconds.</p>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-num">01</div>
+                    <div class="step-icon">🎯</div>
+                    <div class="step-title">Set Your Goal</div>
+                    <div class="step-desc">Choose your daily water target — or use our smart default of 2,500 ml. Adjust anytime in Settings.</div>
+                </div>
+                <div class="step">
+                    <div class="step-num">02</div>
+                    <div class="step-icon">💧</div>
+                    <div class="step-title">Log Every Sip</div>
+                    <div class="step-desc">Quick-add buttons for small, glass, bottle, or large. Or enter a custom amount. One tap and you're done.</div>
+                </div>
+                <div class="step">
+                    <div class="step-num">03</div>
+                    <div class="step-icon">🔔</div>
+                    <div class="step-title">Get Gentle Nudges</div>
+                    <div class="step-desc">8 customizable reminders throughout the day keep you on track — even when the app is closed.</div>
+                </div>
+                <div class="step">
+                    <div class="step-num">04</div>
+                    <div class="step-icon">🌸</div>
+                    <div class="step-title">Watch Your Plant Bloom</div>
+                    <div class="step-desc">Your plant grows with every sip. Hit 100% of your goal and watch it reach full bloom. Miss a day and start fresh.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section id="features" style="background: rgba(126,200,200,0.02);">
+        <div class="section-inner">
+            <span class="section-tag">Features</span>
+            <h2 class="section-title">Everything you need to stay hydrated</h2>
+            <p class="section-sub">Built with care for people who want to feel their best — without the complexity.</p>
+
+            <div class="features-grid">
+                <div class="feature-card featured">
+                    <div class="feature-icon">🪴</div>
+                    <div class="feature-title">Plant Companion System</div>
+                    <div class="feature-desc">Your personal plant grows through 5 stages as you hydrate — from empty pot to full bloom. Each stage unlocks at 25%, 50%, 75%, and 100% of your daily goal. It resets every morning, giving you a fresh reason to hydrate every single day.</div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🌸</div>
+                    <div class="feature-title">Bloom Points</div>
+                    <div class="feature-desc">Earn 5 points per sip, 50 points for hitting your goal, and streak bonuses when you've been consistent for 7+ days.</div>
+                    <span class="feature-tag">GAMIFIED</span>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔥</div>
+                    <div class="feature-title">Streak Tracking</div>
+                    <div class="feature-desc">Build momentum day by day. Your streak counter motivates you to stay consistent and rewards your dedication.</div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-title">Daily History Log</div>
+                    <div class="feature-desc">See every sip logged with timestamps, a visual timeline, and a daily summary — intake total, average per sip, and % of goal.</div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔔</div>
+                    <div class="feature-title">Smart Reminders</div>
+                    <div class="feature-desc">8 preset reminders from Morning Rise to Before Bed. Toggle each one individually to match your daily rhythm.</div>
+                    <span class="feature-tag">PRO: AI-POWERED</span>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">↩️</div>
+                    <div class="feature-title">Undo & Custom Amounts</div>
+                    <div class="feature-desc">Made a mistake? Undo the last entry instantly. Need an exact amount? Type any value from 10 to 2,000 ml.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PLANT SECTION -->
+    <section class="plant-section">
+        <div class="plant-inner">
+            <div class="plant-text">
+                <span class="section-tag">Plant Companion</span>
+                <h2 class="section-title">Hydration you can see grow</h2>
+
+                <ul class="plant-bullets">
+                    <li>
+                        <span class="plant-bullet-icon">🌱</span>
+                        <span class="plant-bullet-text"><strong>5 growth stages</strong> from an empty pot to a flower in full bloom — unlocked as you hit 25%, 50%, 75%, and 100% of your goal.</span>
+                    </li>
+                    <li>
+                        <span class="plant-bullet-icon">🔄</span>
+                        <span class="plant-bullet-text"><strong>Resets daily</strong>, just like Duolingo. Every morning is a new chance to bloom.</span>
+                    </li>
+                    <li>
+                        <span class="plant-bullet-icon">✨</span>
+                        <span class="plant-bullet-text"><strong>Streak bonuses</strong> activate after 7 consecutive days — earn extra Bloom Points with every sip.</span>
+                    </li>
+                    <li>
+                        <span class="plant-bullet-icon">👑</span>
+                        <span class="plant-bullet-text"><strong>Premium plant collection</strong> coming — unlock Sakura, Monstera, Succulent & more.</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="plant-stages">
+                <div class="plant-stage">
+                    <div class="plant-stage-icon">🪴</div>
+                    <div class="plant-stage-label">0%</div>
+                </div>
+                <span class="plant-arrow">→</span>
+                <div class="plant-stage">
+                    <div class="plant-stage-icon">🌱</div>
+                    <div class="plant-stage-label">25%</div>
+                </div>
+                <span class="plant-arrow">→</span>
+                <div class="plant-stage">
+                    <div class="plant-stage-icon">🌿</div>
+                    <div class="plant-stage-label">50%</div>
+                </div>
+                <span class="plant-arrow">→</span>
+                <div class="plant-stage">
+                    <div class="plant-stage-icon">🪻</div>
+                    <div class="plant-stage-label">75%</div>
+                </div>
+                <span class="plant-arrow">→</span>
+                <div class="plant-stage">
+                    <div class="plant-stage-icon">🌸</div>
+                    <div class="plant-stage-label">100%</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRICING -->
+    <section id="pricing">
+        <div class="section-inner">
+            <span class="section-tag">Pricing</span>
+            <h2 class="section-title">Free forever, or unlock it all</h2>
+            <p class="section-sub">Start for free — no credit card, no account. Upgrade when you're ready for more.</p>
+
+            <div class="pricing-cards">
+                <!-- Free -->
+                <div class="pricing-card">
+                    <div class="pricing-name">Free</div>
+                    <div class="pricing-price">$0</div>
+                    <div class="pricing-period">forever</div>
+                    <div class="pricing-divider"></div>
+                    <ul class="pricing-features">
+                        <li>Daily water tracking</li>
+                        <li>Quick-add & custom amounts</li>
+                        <li>Plant companion (Sprout)</li>
+                        <li>Bloom Points & streaks</li>
+                        <li>8 reminder slots</li>
+                        <li>Daily history log</li>
+                    </ul>
+                    <a href="#download" class="pricing-btn outline">Get Started Free</a>
+                </div>
+
+                <!-- Monthly -->
+                <div class="pricing-card highlighted">
+                    <div class="pricing-badge">MOST POPULAR</div>
+                    <div class="pricing-name">Monthly</div>
+                    <div class="pricing-price">$3.99</div>
+                    <div class="pricing-period">per month</div>
+                    <div class="pricing-trial">7-day free trial</div>
+                    <div class="pricing-divider"></div>
+                    <ul class="pricing-features">
+                        <li>Everything in Free</li>
+                        <li>AI-powered smart reminders</li>
+                        <li>Weekly & monthly analytics</li>
+                        <li>Premium plant collection</li>
+                        <li>Streak Freeze protection</li>
+                        <li>Hydration Circles</li>
+                        <li>Apple Health & Google Fit</li>
+                        <li>Remove all ads</li>
+                    </ul>
+                    <a href="#download" class="pricing-btn grad">Start Free Trial</a>
+                </div>
+
+                <!-- Yearly -->
+                <div class="pricing-card">
+                    <div class="pricing-name">Yearly</div>
+                    <div class="pricing-price">$29.99</div>
+                    <div class="pricing-period">per year</div>
+                    <div class="pricing-trial">7-day free trial</div>
+                    <div class="pricing-save">Save 37% vs monthly</div>
+                    <div class="pricing-divider"></div>
+                    <ul class="pricing-features">
+                        <li>Everything in Monthly</li>
+                        <li>Best value subscription</li>
+                        <li>Priority feature access</li>
+                    </ul>
+                    <a href="#download" class="pricing-btn outline">Start Free Trial</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section style="background: rgba(126,200,200,0.02);">
+        <div class="section-inner">
+            <span class="section-tag">Reviews</span>
+            <h2 class="section-title">People are glowing</h2>
+
+            <div class="testimonials">
+                <div class="testimonial">
+                    <div class="testimonial-stars">★★★★★</div>
+                    <p class="testimonial-text">"I've tried every water app and AquaBloom is the only one I've stuck with. The plant mechanic is so motivating — I literally can't let it die."</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar" style="background:rgba(126,200,200,0.1)">💧</div>
+                        <div><div class="testimonial-name">Sarah M.</div><div class="testimonial-meta">iOS · 90-day streak</div></div>
+                    </div>
+                </div>
+
+                <div class="testimonial">
+                    <div class="testimonial-stars">★★★★★</div>
+                    <p class="testimonial-text">"The reminders are perfectly timed and the UI is just gorgeous. I actually look forward to logging my water now. My skin has never looked better."</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar" style="background:rgba(196,167,215,0.1)">🌸</div>
+                        <div><div class="testimonial-name">Priya K.</div><div class="testimonial-meta">Android · Premium user</div></div>
+                    </div>
+                </div>
+
+                <div class="testimonial">
+                    <div class="testimonial-stars">★★★★★</div>
+                    <p class="testimonial-text">"Bloom Points got me hooked. I'm competing with myself every day to beat yesterday's score. Best $3.99 I've ever spent on my health."</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar" style="background:rgba(240,166,185,0.1)">✨</div>
+                        <div><div class="testimonial-name">Aisha T.</div><div class="testimonial-meta">iOS · 12,000 Bloom Points</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA BANNER -->
+    <div class="cta-banner" id="download">
+        <h2>Start your hydration journey today</h2>
+        <p>Free to download. No account required. Your plant is waiting to bloom.</p>
+
+        <div class="cta-store-btns">
+            <a href="#" class="store-btn">
+                <span class="store-btn-icon">🍎</span>
+                <div>
+                    <div class="store-btn-sub">Download on the</div>
+                    <div class="store-btn-name">App Store</div>
+                </div>
+            </a>
+            <a href="#" class="store-btn">
+                <span class="store-btn-icon">▶</span>
+                <div>
+                    <div class="store-btn-sub">Get it on</div>
+                    <div class="store-btn-name">Google Play</div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-logo">💧 AquaBloom</div>
+            <ul class="footer-links">
+                <li><a href="#">Privacy Policy</a></li>
+                <li><a href="#">Terms of Service</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+            <div class="footer-copy">Made with 💕 for healthy hydration · AquaBloom © 2026</div>
+        </div>
+    </footer>
+</body>
+</html>
