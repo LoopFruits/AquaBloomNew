@@ -21,8 +21,8 @@ export default function RemindersScreen() {
 
   const handleRequestPermission = async () => {
     track(EVENTS.NOTIFICATIONS_PERMISSION_REQUESTED);
-    const result = await requestPermission();
-    track(result ? EVENTS.NOTIFICATIONS_PERMISSION_GRANTED : EVENTS.NOTIFICATIONS_PERMISSION_DENIED);
+    await requestPermission();
+    track(EVENTS.NOTIFICATIONS_PERMISSION_GRANTED);
   };
 
   return (

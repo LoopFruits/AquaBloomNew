@@ -1,10 +1,31 @@
-import { useEffect, useState } from 'react';
-import { Stack } from 'expo-router';
+import { useEffect, useRef, useState } from 'react';
+import { Stack, usePathname, useGlobalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font';
-import AnalyticsProvider from '../src/providers/AnalyticsProvider';
+import AnalyticsProvider, { posthogClient } from '../src/providers/AnalyticsProvider';
 import RevenueCatProvider from '../src/providers/RevenueCatProvider';
+
+// Tracks screen changes with PostHog via posthog.screen() for Expo Router.
+// Must be rendered inside <AnalyticsProvider> so it fires after the provider mounts.
+// @see https://posthog.com/docs/libraries/react-native#screen-tracking
+function ScreenTracker() {
+  const pathname = usePathname();
+  const params = useGlobalSearchParams();
+  const previousPathname = useRef<string | undefined>(undefined);
+
+  useEffect(() => {
+    if (previousPathname.current !== pathname) {
+      posthogClient.screen(pathname, {
+        previous_screen: previousPathname.current ?? null,
+        ...params,
+      });
+      previousPathname.current = pathname;
+    }
+  }, [pathname, params]);
+
+  return null;
+}
 
 SplashScreen.preventAutoHideAsync();
 
@@ -44,6 +65,7 @@ export default function RootLayout() {
 
   return (
     <AnalyticsProvider>
+      <ScreenTracker />
       <RevenueCatProvider>
         <StatusBar style="light" />
         <Stack

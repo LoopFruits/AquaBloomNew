@@ -149,7 +149,7 @@ export default function SettingsScreen() {
           </View>
         ))}
 
-        <Text style={s.footer}>Made with 💕 for women who glow{'\n'}AquaBloom © 2026</Text>
+        <Text style={s.footer}>Made with 💕 for healthy hydration{'\n'}AquaBloom © 2026</Text>
         <View style={{ height: 40 }} />
       </ScrollView>
     </View>

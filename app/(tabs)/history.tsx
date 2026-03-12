@@ -3,6 +3,9 @@ import { useRouter } from 'expo-router';
 import { useHydration } from '../../src/hooks/useHydration';
 import { useAnalytics } from '../../src/hooks/useAnalytics';
 import { usePremium } from '../../src/hooks/usePremium';
+import { useGamification } from '../../src/hooks/useGamification';
+import AdBanner from '../../src/components/AdBanner';
+import PlantCompanion from '../../src/components/PlantCompanion';
 
 const TEAL = '#7ec8c8';
 const GOLD = '#f0c674';
@@ -12,6 +15,7 @@ export default function HistoryScreen() {
   const router = useRouter();
   const { track, EVENTS } = useAnalytics();
   const { isPremium } = usePremium();
+  const { bloomPoints, plantState } = useGamification();
 
   const handleReset = () => {
     track(EVENTS.DAY_RESET, { intake_before_reset: intake, sips_before_reset: log.length });
@@ -33,13 +37,46 @@ export default function HistoryScreen() {
           )}
         </View>
 
-        {/* Streak */}
+        {/* Streak + Plant */}
         <View style={s.streakCard}>
-          <Text style={{ fontSize: 28 }}>🔥</Text>
-          <View>
-            <Text style={s.streakVal}>{streak} Day Streak</Text>
-            <Text style={s.streakLbl}>{streak === 0 ? 'Hit your goal today to start a streak!' : 'Keep it going, beautiful!'}</Text>
+          <PlantCompanion growthStage={plantState.growthStage} size={50} />
+          <View style={{ flex: 1 }}>
+            <Text style={s.streakVal}>🔥 {streak} Day Streak</Text>
+            <Text style={s.streakLbl}>{streak === 0 ? 'Hit your goal today to start a streak!' : 'Keep it going — your plant is counting on you!'}</Text>
           </View>
+        </View>
+
+        {/* Bloom Points Today */}
+        <View style={s.pointsCard}>
+          <Text style={s.pointsTitle}>🌸 BLOOM POINTS TODAY</Text>
+          <View style={s.pointsRow}>
+            <View style={{ alignItems: 'center' }}>
+              <Text style={s.pointsVal}>{bloomPoints.todayEarned}</Text>
+              <Text style={s.pointsLbl}>earned</Text>
+            </View>
+            <View style={s.pointsDivider} />
+            <View style={{ alignItems: 'center' }}>
+              <Text style={s.pointsVal}>{bloomPoints.total.toLocaleString()}</Text>
+              <Text style={s.pointsLbl}>lifetime</Text>
+            </View>
+            <View style={s.pointsDivider} />
+            <View style={{ alignItems: 'center' }}>
+              <Text style={s.pointsVal}>{bloomPoints.todayLog.length}</Text>
+              <Text style={s.pointsLbl}>earnings</Text>
+            </View>
+          </View>
+          {bloomPoints.todayLog.length > 0 && (
+            <View style={{ marginTop: 10 }}>
+              {bloomPoints.todayLog.slice(-5).reverse().map((entry, i) => (
+                <View key={i} style={s.pointsEntry}>
+                  <Text style={s.pointsEntryReason}>
+                    {entry.reason === 'sip' ? '💧 Sip' : entry.reason === 'goal_reached' ? '🏆 Goal!' : '🔥 Streak'}
+                  </Text>
+                  <Text style={s.pointsEntryPts}>+{entry.points}</Text>
+                </View>
+              ))}
+            </View>
+          )}
         </View>
 
         <Text style={s.section}>TODAY'S LOG</Text>
@@ -90,6 +127,9 @@ export default function HistoryScreen() {
 
         <View style={{ height: 40 }} />
       </ScrollView>
+
+      {/* Banner ad — hidden for premium users */}
+      <AdBanner isPremium={isPremium} />
     </View>
   );
 }
@@ -102,9 +142,18 @@ const s = StyleSheet.create({
   subtitle: { fontSize: 13, color: '#6b7280', marginTop: 4 },
   resetBtn: { borderWidth: 1, borderColor: 'rgba(240,166,185,0.2)', borderRadius: 8, paddingHorizontal: 14, paddingVertical: 6, marginTop: 4 },
   resetTxt: { fontSize: 11, color: '#f0a6b9' },
-  streakCard: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: 'rgba(126,200,200,0.04)', borderWidth: 1, borderColor: 'rgba(126,200,200,0.1)', borderRadius: 16, padding: 16, marginBottom: 24 },
-  streakVal: { fontSize: 20, fontWeight: '300', color: '#e8eaed' },
+  streakCard: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: 'rgba(126,200,200,0.04)', borderWidth: 1, borderColor: 'rgba(126,200,200,0.1)', borderRadius: 16, padding: 16, marginBottom: 12 },
+  streakVal: { fontSize: 18, fontWeight: '300', color: '#e8eaed' },
   streakLbl: { fontSize: 12, color: '#6b7280', marginTop: 2 },
+  pointsCard: { backgroundColor: 'rgba(196,167,215,0.06)', borderWidth: 1, borderColor: 'rgba(196,167,215,0.12)', borderRadius: 16, padding: 16, marginBottom: 24 },
+  pointsTitle: { fontSize: 12, fontWeight: '600', color: '#9ba3af', letterSpacing: 1, textAlign: 'center', marginBottom: 10 },
+  pointsRow: { flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' },
+  pointsVal: { fontSize: 22, fontWeight: '300', color: '#e8eaed' },
+  pointsLbl: { fontSize: 10, color: '#6b7280', marginTop: 2 },
+  pointsDivider: { width: 1, height: 28, backgroundColor: 'rgba(196,167,215,0.12)' },
+  pointsEntry: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 4, borderTopWidth: 1, borderTopColor: 'rgba(196,167,215,0.06)' },
+  pointsEntryReason: { fontSize: 12, color: '#9ba3af' },
+  pointsEntryPts: { fontSize: 12, fontWeight: '600', color: TEAL },
   section: { fontSize: 13, fontWeight: '600', color: '#9ba3af', letterSpacing: 1.2, marginBottom: 12 },
   empty: { alignItems: 'center', paddingVertical: 60 },
   emptyTxt: { color: '#9ba3af', marginTop: 12, fontSize: 14 },

@@ -10,7 +10,13 @@ import { useRouter } from 'expo-router';
 import { useHydration } from '../../src/hooks/useHydration';
 import { useAnalytics } from '../../src/hooks/useAnalytics';
 import { usePremium } from '../../src/hooks/usePremium';
+import { useGamification } from '../../src/hooks/useGamification';
 import { QUICK_ADD_OPTIONS } from '../../src/config/constants';
+import { BLOOM_POINTS } from '../../src/config/gamification';
+import AdBanner from '../../src/components/AdBanner';
+import PlantCompanion from '../../src/components/PlantCompanion';
+import BloomPointsBadge from '../../src/components/BloomPointsBadge';
+import { useInterstitialAd } from '../../src/hooks/useInterstitialAd';
 
 const { width: SW } = Dimensions.get('window');
 const TEAL = '#7ec8c8';
@@ -60,24 +66,38 @@ export default function HomeScreen() {
   const hydration = useHydration();
   const {
     intake, goal, progress, percentage, glassesLeft, mlRemaining,
-    log, currentAffirmation, goalReached, addWater, undoLast,
+    log, currentAffirmation, goalReached, streak, addWater, undoLast,
   } = hydration;
   const router = useRouter();
   const { track, setUserProperty, EVENTS, PROPERTIES } = useAnalytics();
   const { isPremium } = usePremium();
+  const { showIfReady: showInterstitial } = useInterstitialAd(isPremium);
+  const gamification = useGamification();
+  const { bloomPoints, plantState, addBloomPoints, updatePlantGrowth } = gamification;
   const [customMl, setCustomMl] = useState('');
   const [showCelebration, setShowCelebration] = useState(false);
+  const [lastPointsEarned, setLastPointsEarned] = useState(0);
 
   const handleAdd = useCallback((ml: number) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     addWater(ml);
     track(EVENTS.WATER_ADDED, { ml, source: 'quick_add', total_intake: intake + ml });
+
+    // ── Gamification: earn Bloom Points ──
+    const basePoints = BLOOM_POINTS.PER_SIP;
+    addBloomPoints(basePoints, 'sip', streak);
+    updatePlantGrowth(intake + ml, goal);
+    setLastPointsEarned(basePoints + (streak >= BLOOM_POINTS.STREAK_BONUS_THRESHOLD ? BLOOM_POINTS.STREAK_BONUS_PER_SIP : 0));
+
     if (intake + ml >= goal && !goalReached) {
       track(EVENTS.DAILY_GOAL_REACHED, { goal, total_intake: intake + ml, sips: log.length + 1 });
+      addBloomPoints(BLOOM_POINTS.GOAL_REACHED, 'goal_reached', streak);
       setShowCelebration(true);
       setTimeout(() => setShowCelebration(false), 3000);
     }
-  }, [intake, goal, goalReached, addWater, log.length, track]);
+    // Maybe show an interstitial ad (respects frequency & cooldown)
+    showInterstitial();
+  }, [intake, goal, goalReached, streak, addWater, log.length, track, showInterstitial, addBloomPoints, updatePlantGrowth]);
 
   const handleCustom = useCallback(() => {
     const val = parseInt(customMl, 10);
@@ -102,14 +122,27 @@ export default function HomeScreen() {
           <WaterDrop size={32} fill={progress} />
         </View>
 
-        {/* Progress */}
+        {/* Bloom Points Badge */}
+        <View style={{ alignItems: 'center', marginBottom: 8 }}>
+          <BloomPointsBadge
+            pointsEarned={lastPointsEarned}
+            totalPoints={bloomPoints.total}
+            todayPoints={bloomPoints.todayEarned}
+          />
+        </View>
+
+        {/* Progress Ring with Plant Inside */}
         <View style={s.ringWrap}>
           <ProgressRing progress={progress} />
           <View style={s.ringCenter}>
-            <Text style={s.pct}>{percentage}%</Text>
-            <Text style={s.ml}>{intake} ml</Text>
-            <Text style={s.goalTxt}>of {goal} ml</Text>
+            <PlantCompanion growthStage={plantState.growthStage} size={100} />
           </View>
+        </View>
+
+        {/* Stats below ring */}
+        <View style={s.ringStats}>
+          <Text style={s.pct}>{percentage}%</Text>
+          <Text style={s.ml}>{intake} ml <Text style={s.goalTxt}>of {goal} ml</Text></Text>
         </View>
 
         <Text style={s.affirmation}>{currentAffirmation}</Text>
@@ -146,19 +179,19 @@ export default function HomeScreen() {
         </View>
 
         {log.length > 0 && (
-          <TouchableOpacity onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); track(EVENTS.WATER_UNDONE, { ml: log[0].ml }); undoLast(); }} style={s.undo}>
-            <Text style={s.undoTxt}>↩ Undo last ({log[0].ml} ml)</Text>
+          <TouchableOpacity onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); track(EVENTS.WATER_UNDONE, { ml: (log[0] as any).ml }); undoLast(); }} style={s.undo}>
+            <Text style={s.undoTxt}>↩ Undo last ({(log[0] as any).ml} ml)</Text>
           </TouchableOpacity>
         )}
 
         {/* Premium upsell — only show for free users */}
-        {!isPremium && <TouchableOpacity onPress={() => router.push('/paywall')} style={s.premBanner}>
+        {!isPremium && <TouchableOpacity onPress={() => { track(EVENTS.UPGRADE_BANNER_TAPPED, { source: 'home' }); router.push('/paywall'); }} style={s.premBanner}>
           <LinearGradient colors={['rgba(240,198,116,0.08)', 'rgba(196,167,215,0.08)']}
             start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={s.premGrad}>
             <Text style={{ fontSize: 24 }}>✨</Text>
             <View style={{ flex: 1 }}>
               <Text style={s.premTitle}>Unlock AquaBloom Premium</Text>
-              <Text style={s.premSub}>Smart reminders, analytics, themes & more</Text>
+              <Text style={s.premSub}>Plant collection, analytics, streak freeze & more</Text>
             </View>
             <Text style={{ fontSize: 18, color: '#f0c674' }}>→</Text>
           </LinearGradient>
@@ -167,13 +200,16 @@ export default function HomeScreen() {
         <View style={{ height: 40 }} />
       </ScrollView>
 
+      {/* Banner ad — hidden for premium users */}
+      <AdBanner isPremium={isPremium} />
+
       {/* Celebration */}
       <Modal visible={showCelebration} transparent animationType="fade">
         <View style={s.celOverlay}>
           <View style={{ alignItems: 'center' }}>
             <Text style={{ fontSize: 64 }}>🎉</Text>
             <Text style={s.celTitle}>Goal Reached!</Text>
-            <Text style={s.celSub}>You're absolutely radiant today ✨</Text>
+            <Text style={s.celSub}>+{BLOOM_POINTS.GOAL_REACHED} Bloom Points earned! 🌸</Text>
           </View>
         </View>
       </Modal>
@@ -188,10 +224,11 @@ const s = StyleSheet.create({
   title: { fontSize: 26, fontWeight: '300', color: TEAL, letterSpacing: 1 },
   subtitle: { fontSize: 12, color: '#6b7280', marginTop: 2 },
   ringWrap: { alignItems: 'center', paddingVertical: 12, position: 'relative' },
-  ringCenter: { position: 'absolute', top: '50%', alignItems: 'center', marginTop: -25 },
-  pct: { fontSize: 42, fontWeight: '200', color: '#e8eaed' },
-  ml: { fontSize: 14, fontWeight: '600', color: TEAL },
-  goalTxt: { fontSize: 11, color: '#6b7280' },
+  ringCenter: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, alignItems: 'center', justifyContent: 'center' },
+  ringStats: { alignItems: 'center', marginTop: -4, marginBottom: 4 },
+  pct: { fontSize: 32, fontWeight: '200', color: '#e8eaed' },
+  ml: { fontSize: 13, fontWeight: '600', color: TEAL, marginTop: 2 },
+  goalTxt: { fontSize: 11, fontWeight: '400', color: '#6b7280' },
   affirmation: { textAlign: 'center', fontSize: 13, color: LAVENDER, fontStyle: 'italic', marginVertical: 12, lineHeight: 20 },
   statusCard: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', backgroundColor: 'rgba(126,200,200,0.04)', borderWidth: 1, borderColor: 'rgba(126,200,200,0.1)', borderRadius: 16, paddingVertical: 14, marginBottom: 24 },
   statusItem: { alignItems: 'center', gap: 2 },
