@@ -174,12 +174,12 @@ https://keithjordanmusic.com/aquabloom
 
 ### Privacy Policy URL
 ```
-https://keithjordanmusic.com/aquabloom-privacy
+https://loopfruits.github.io/AquaBloomNew/privacy.html
 ```
 
 ### Terms of Service URL
 ```
-https://keithjordanmusic.com/aquabloom-terms
+https://loopfruits.github.io/AquaBloomNew/terms.html
 ```
 
 ---
