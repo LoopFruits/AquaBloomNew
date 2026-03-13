@@ -1,50 +1,185 @@
-# Welcome to your Expo app 👋
+# 💧 AquaBloom - Hydrate & Glow
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+> A beautiful hydration tracking app that makes drinking water the best part of your day. Track every sip, grow a virtual plant companion, earn Bloom Points, and build lasting hydration habits.
 
-## Get started
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-1. Install dependencies
+![AquaBloom App Preview](./mockup/hero-image.png)
 
+---
+
+## 🌸 Why AquaBloom?
+
+Most water tracking apps are boring. AquaBloom transforms hydration into a **self-care ritual**:
+
+- 🪴 **Plant Companion** — Watch your virtual plant grow from pot to full bloom as you hit your daily goal
+- 🌸 **Bloom Points** — Earn points for every sip, unlock achievements, build streaks
+- 💧 **One-Tap Logging** — Quick-add buttons (250ml, 500ml, custom) make tracking effortless
+- ⏰ **Smart Reminders** — 8 customizable notifications that fit your schedule
+- 📊 **Beautiful Analytics** — Track progress with gorgeous charts and insights
+
+**Target audience:** Women 18-45 focused on wellness, glowing skin, and healthy habits.
+
+---
+
+## ✨ Features
+
+### Free Tier
+- Daily water tracking with quick-add buttons
+- Plant companion (Sprout)
+- Bloom Points & streak tracking
+- 8 reminder slots
+- Daily history log
+- Beautiful UI with pastel gradients
+
+### Premium ($3.99/month or $29.99/year)
+- 7-day free trial
+- AI-powered smart reminders
+- Premium plant collection (Sakura, Monstera, Succulent)
+- Advanced analytics (weekly/monthly trends)
+- Streak Freeze protection
+- Apple Health & Google Fit sync
+- Ad-free experience
+
+---
+
+## 📱 Screenshots
+
+*Coming soon - App Store screenshots will be added here*
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js 18+
+- Expo CLI
+- iOS Simulator (Mac) or Android Emulator
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/LoopFruits/AquaBloomNew.git
+   cd AquaBloomNew
+   ```
+
+2. **Install dependencies**
    ```bash
    npm install
    ```
 
-2. Start the app
-
+3. **Start the development server**
    ```bash
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+4. **Run on device**
+   - Press `i` for iOS Simulator
+   - Press `a` for Android Emulator
+   - Scan QR code with Expo Go app
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+---
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## 🛠️ Tech Stack
 
-## Get a fresh project
+- **Framework:** React Native (Expo)
+- **Navigation:** Expo Router (file-based)
+- **Subscriptions:** RevenueCat
+- **Ads:** Google AdMob (free tier)
+- **Analytics:** PostHog (privacy-focused)
+- **Health Integrations:** Apple Health, Google Fit
+- **Notifications:** Expo Notifications API
 
-When you're ready, run:
+---
 
-```bash
-npm run reset-project
+## 📂 Project Structure
+
+```
+aquabloom/
+├── app/                  # Expo Router pages
+│   ├── (tabs)/          # Main tab screens
+│   │   ├── index.tsx    # Home (water tracking)
+│   │   ├── history.tsx  # History/stats
+│   │   ├── reminders.tsx
+│   │   └── settings.tsx
+│   └── _layout.tsx
+├── src/
+│   ├── components/      # Reusable components
+│   ├── config/          # App configuration
+│   ├── hooks/           # Custom hooks
+│   ├── providers/       # Context providers
+│   └── types/           # TypeScript types
+├── assets/              # Images, fonts, icons
+└── docs/                # Landing page (GitHub Pages)
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-## Learn more
+## 🧪 Running Tests
 
-To learn more about developing your project with Expo, look at the following resources:
+```bash
+npm test
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+---
 
-## Join the community
+## 🚢 Building for Production
 
-Join our community of developers creating universal apps.
+### iOS
+```bash
+npx expo build:ios
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### Android
+```bash
+npx expo build:android
+```
+
+See [SETUP_GUIDE.md](./SETUP_GUIDE.md) for detailed build instructions and App Store submission process.
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Here's how to get started:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 📞 Contact & Support
+
+- **Website:** https://loopfruits.github.io/AquaBloomNew/
+- **Issues:** https://github.com/LoopFruits/AquaBloomNew/issues
+
+---
+
+## 🙏 Acknowledgments
+
+- Built with ❤️ for wellness-focused individuals
+- Inspired by the need to make hydration delightful
+
+---
+
+## 📊 Project Status
+
+- ✅ Core features complete
+- ✅ Premium subscription integrated (RevenueCat)
+- ✅ AdMob integrated (free tier)
+- 🚧 App Store submission in progress
+- 📅 Target launch: March 2026
+
+---
+
+**Made with 💕 for healthy hydration · AquaBloom © 2026**
