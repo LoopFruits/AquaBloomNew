@@ -34,11 +34,16 @@ export interface PlantState {
 
 /** SVG path definition for one growth stage */
 export interface PlantStagePaths {
-  pot: string;
+  pot?: string;
+  potRim?: string;
   stem?: string;
   leaves?: string[];
-  flower?: string;
-  soil: string;
+  bud?: string;
+  flower?: {
+    petals: string[];
+    center: { cx: number; cy: number; r: number };
+  };
+  soil?: string;
 }
 
 /** Complete plant species definition */

@@ -79,7 +79,7 @@ export default function HistoryScreen() {
           )}
         </View>
 
-        <Text style={s.section}>TODAY'S LOG</Text>
+        <Text style={s.section}>{"TODAY'S LOG"}</Text>
 
         {log.length === 0 ? (
           <View style={s.empty}>

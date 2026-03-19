@@ -38,10 +38,10 @@ export function useNotifications() {
 
     return () => {
       if (notificationListener.current) {
-        Notifications.removeNotificationSubscription(notificationListener.current);
+        notificationListener.current.remove();
       }
       if (responseListener.current) {
-        Notifications.removeNotificationSubscription(responseListener.current);
+        responseListener.current.remove();
       }
     };
   }, []);
@@ -68,7 +68,7 @@ export function useNotifications() {
         });
       }
     } catch (e) {
-      console.warn('Notification permission error:', e);
+      if (__DEV__) console.warn('Notification permission error:', e);
     }
   };
 
@@ -79,7 +79,7 @@ export function useNotifications() {
         setReminders(JSON.parse(saved));
       }
     } catch (e) {
-      console.warn('Failed to load reminders:', e);
+      if (__DEV__) console.warn('Failed to load reminders:', e);
     }
   };
 
@@ -111,7 +111,7 @@ export function useNotifications() {
         });
       }
     } catch (e) {
-      console.warn('Failed to schedule reminders:', e);
+      if (__DEV__) console.warn('Failed to schedule reminders:', e);
     }
   }, []);
 
@@ -126,7 +126,7 @@ export function useNotifications() {
         await AsyncStorage.setItem(STORAGE_KEYS.REMINDERS, JSON.stringify(updated));
         await scheduleAllReminders(updated);
       } catch (e) {
-        console.warn('Failed to save reminder toggle:', e);
+        if (__DEV__) console.warn('Failed to save reminder toggle:', e);
       }
     },
     [reminders, scheduleAllReminders]
@@ -143,7 +143,7 @@ export function useNotifications() {
         await AsyncStorage.setItem(STORAGE_KEYS.REMINDERS, JSON.stringify(updated));
         await scheduleAllReminders(updated);
       } catch (e) {
-        console.warn('Failed to update reminder time:', e);
+        if (__DEV__) console.warn('Failed to update reminder time:', e);
       }
     },
     [reminders, scheduleAllReminders]

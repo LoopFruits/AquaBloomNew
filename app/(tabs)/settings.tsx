@@ -8,6 +8,10 @@ import { usePremium } from '../../src/hooks/usePremium';
 const TEAL = '#7ec8c8';
 const GOLD = '#f0c674';
 
+// TODO: Replace with your App Store numeric ID once the app is live in App Store Connect
+const APP_STORE_ID = 'REPLACE_WITH_APP_STORE_ID';
+const RATE_URL = `https://apps.apple.com/app/id${APP_STORE_ID}?action=write-review`;
+
 export default function SettingsScreen() {
   const { goal, updateGoal, streak } = useHydration();
   const router = useRouter();
@@ -74,7 +78,7 @@ export default function SettingsScreen() {
     },
     {
       title: 'ABOUT', items: [
-        { emoji: '⭐', label: 'Rate AquaBloom', value: 'We appreciate your support!', action: () => {} },
+        { emoji: '⭐', label: 'Rate AquaBloom', value: 'We appreciate your support!', action: () => Linking.openURL(RATE_URL) },
         { emoji: '🔒', label: 'Privacy Policy', value: '', action: () => Linking.openURL('https://aquabloom.app/privacy') },
         { emoji: '📄', label: 'Terms of Service', value: '', action: () => Linking.openURL('https://aquabloom.app/terms') },
         { emoji: '📱', label: 'Version', value: '1.0.0' },

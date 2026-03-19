@@ -9,7 +9,11 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.goodie2times.AquaBloomNew",
+      "infoPlist": {
+        "NSUserNotificationUsageDescription": "AquaBloom sends hydration reminders to help you reach your daily water goal."
+      }
     },
     "android": {
       "adaptiveIcon": {
