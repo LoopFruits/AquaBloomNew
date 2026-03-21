@@ -12,7 +12,8 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.goodie2times.AquaBloomNew",
       "infoPlist": {
-        "NSUserNotificationUsageDescription": "AquaBloom sends hydration reminders to help you reach your daily water goal."
+        "NSUserNotificationUsageDescription": "AquaBloom sends hydration reminders to help you reach your daily water goal.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
@@ -48,7 +49,7 @@
         "react-native-google-mobile-ads",
         {
           "androidAppId": "ca-app-pub-XXXXXXXXXXXXXXXX~XXXXXXXXXX",
-          "iosAppId": "ca-app-pub-XXXXXXXXXXXXXXXX~XXXXXXXXXX"
+          "iosAppId": "ca-app-pub-4413669091122408~7686963727"
         }
       ]
     ],
