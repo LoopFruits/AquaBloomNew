@@ -19,16 +19,14 @@
 //    (Tools > Paywalls > Create New)
 // ─────────────────────────────────────────────────
 
-import { Platform } from 'react-native';
+import Constants from "expo-constants";
+import { Platform } from "react-native";
 
-// Your RevenueCat API key
-// This is the key you provided — it works for both platforms when using
-// a RevenueCat "App" that has both iOS and Android store connections
-export const REVENUECAT_API_KEY = 'test_oDHLWrjRbrwpdUNwqrzVOEFtujb';
-
-// Alternatively, if you have separate Apple/Google API keys:
-// export const REVENUECAT_APPLE_API_KEY = 'appl_xxxxx';
-// export const REVENUECAT_GOOGLE_API_KEY = 'goog_xxxxx';
+export const REVENUECAT_API_KEY =
+  Platform.select({
+    ios: Constants.expoConfig?.extra?.revenueCatKeyIos as string | undefined,
+    android: Constants.expoConfig?.extra?.revenueCatKeyAndroid as string | undefined,
+  }) ?? "";
 
 // The entitlement identifier you set up in RevenueCat Dashboard
 export const ENTITLEMENT_ID = 'AquaBloom Pro';
