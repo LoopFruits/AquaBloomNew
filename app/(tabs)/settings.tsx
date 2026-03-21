@@ -120,10 +120,10 @@ export default function SettingsScreen() {
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 12, marginTop: 12 }}>
               <TouchableOpacity onPress={() => { setEditing(false); setGoalInput(goal.toString()); }}>
-                <Text style={{ color: '#6b7280', fontSize: 14 }}>Cancel</Text>
+                <Text style={{ color: '#6b7280', fontSize: 14, fontFamily: 'Nunito-Regular' }}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={saveGoal} style={s.saveBtn}>
-                <Text style={{ color: TEAL, fontWeight: '600', fontSize: 14 }}>Save</Text>
+                <Text style={{ color: TEAL, fontFamily: 'Nunito-SemiBold', fontSize: 14 }}>Save</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -164,26 +164,26 @@ const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#0d1117' },
   scroll: { paddingHorizontal: 24, paddingBottom: 100 },
   header: { paddingTop: 60, paddingBottom: 16 },
-  title: { fontSize: 26, fontWeight: '300', color: '#7ec8c8', letterSpacing: 1 },
-  subtitle: { fontSize: 13, color: '#6b7280', marginTop: 4 },
+  title: { fontSize: 28, fontFamily: 'Cormorant-Light', color: '#7ec8c8', letterSpacing: 1 },
+  subtitle: { fontSize: 13, fontFamily: 'Nunito-Regular', color: '#6b7280', marginTop: 4 },
   proBanner: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: 'rgba(126,200,200,0.06)', borderWidth: 1, borderColor: 'rgba(126,200,200,0.15)', borderRadius: 16, padding: 16, marginBottom: 20 },
-  proBannerTitle: { fontSize: 16, fontWeight: '600', color: TEAL },
-  proBannerSub: { fontSize: 12, color: '#6b7280', marginTop: 2 },
+  proBannerTitle: { fontSize: 16, fontFamily: 'Nunito-SemiBold', color: TEAL },
+  proBannerSub: { fontSize: 12, fontFamily: 'Nunito-Regular', color: '#6b7280', marginTop: 2 },
   editor: { backgroundColor: 'rgba(126,200,200,0.04)', borderWidth: 1, borderColor: 'rgba(126,200,200,0.1)', borderRadius: 16, padding: 20, marginBottom: 20 },
-  editorTitle: { fontSize: 14, fontWeight: '600', color: '#e8eaed', marginBottom: 12 },
-  goalInput: { backgroundColor: 'rgba(126,200,200,0.08)', borderWidth: 1, borderColor: 'rgba(126,200,200,0.15)', borderRadius: 12, padding: 12, fontSize: 24, fontWeight: '600', color: TEAL, textAlign: 'center' },
+  editorTitle: { fontSize: 14, fontFamily: 'Nunito-SemiBold', color: '#e8eaed', marginBottom: 12 },
+  goalInput: { backgroundColor: 'rgba(126,200,200,0.08)', borderWidth: 1, borderColor: 'rgba(126,200,200,0.15)', borderRadius: 12, padding: 12, fontSize: 28, fontFamily: 'Cormorant-Light', color: TEAL, textAlign: 'center' },
   preset: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, borderWidth: 1, borderColor: 'rgba(126,200,200,0.1)' },
   presetActive: { borderColor: TEAL, backgroundColor: 'rgba(126,200,200,0.1)' },
-  presetTxt: { fontSize: 13, color: '#6b7280' },
+  presetTxt: { fontSize: 13, fontFamily: 'Nunito-Regular', color: '#6b7280' },
   saveBtn: { paddingHorizontal: 16, paddingVertical: 8, backgroundColor: 'rgba(126,200,200,0.15)', borderRadius: 8 },
-  secTitle: { fontSize: 12, fontWeight: '600', color: '#9ba3af', letterSpacing: 1.2, marginBottom: 8, marginLeft: 4 },
+  secTitle: { fontSize: 11, fontFamily: 'Nunito-SemiBold', color: '#9ba3af', letterSpacing: 1.5, marginBottom: 8, marginLeft: 4 },
   card: { backgroundColor: 'rgba(126,200,200,0.04)', borderWidth: 1, borderColor: 'rgba(126,200,200,0.1)', borderRadius: 16, overflow: 'hidden' },
   row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16 },
   rowBorder: { borderBottomWidth: 1, borderBottomColor: 'rgba(126,200,200,0.08)' },
   rowHL: { backgroundColor: 'rgba(240,198,116,0.06)' },
-  rowLabel: { fontSize: 14, fontWeight: '500', color: '#e8eaed' },
-  rowVal: { fontSize: 12, color: '#6b7280', marginTop: 1 },
+  rowLabel: { fontSize: 14, fontFamily: 'Nunito-Medium', color: '#e8eaed' },
+  rowVal: { fontSize: 12, fontFamily: 'Nunito-Regular', color: '#6b7280', marginTop: 1 },
   badge: { backgroundColor: 'rgba(240,198,116,0.15)', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
-  badgeTxt: { fontSize: 9, fontWeight: '700', color: GOLD, letterSpacing: 1 },
-  footer: { fontSize: 12, color: '#6b7280', textAlign: 'center', lineHeight: 20, marginTop: 16 },
+  badgeTxt: { fontSize: 9, fontFamily: 'Nunito-Bold', color: GOLD, letterSpacing: 1 },
+  footer: { fontSize: 12, fontFamily: 'Nunito-Regular', color: '#6b7280', textAlign: 'center', lineHeight: 20, marginTop: 16 },
 });

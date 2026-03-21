@@ -98,15 +98,17 @@ const styles = StyleSheet.create({
   },
   todayText: {
     fontSize: 11,
-    fontWeight: '600',
+    fontFamily: 'Nunito-SemiBold',
     color: TEAL,
   },
   separator: {
     fontSize: 11,
+    fontFamily: 'Nunito-Regular',
     color: '#6b7280',
   },
   totalText: {
     fontSize: 11,
+    fontFamily: 'Nunito-Regular',
     color: '#6b7280',
   },
   popup: {
@@ -121,7 +123,7 @@ const styles = StyleSheet.create({
   },
   popupText: {
     fontSize: 13,
-    fontWeight: '700',
+    fontFamily: 'Nunito-Bold',
     color: GOLD,
   },
 });

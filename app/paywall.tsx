@@ -151,7 +151,7 @@ export default function PaywallScreen() {
           style={[s.lifetimeCard, selectedPlan === 'lifetime' && s.lifetimeSelected]}>
           <Text style={{ fontSize: 20 }}>👑</Text>
           <View style={{ flex: 1 }}>
-            <Text style={[s.planName, { color: selectedPlan === 'lifetime' ? GOLD : '#9ba3af' }]}>Lifetime</Text>
+            <Text style={[s.planName, { color: selectedPlan === 'lifetime' ? GOLD : '#6b7280' }]}>Lifetime</Text>
             <Text style={s.lifetimeDesc}>One-time payment, forever yours</Text>
           </View>
           <Text style={[s.planPrice, { fontSize: 22 }]}>{lifetimePrice}</Text>
@@ -191,29 +191,29 @@ const s = StyleSheet.create({
   close: { alignSelf: 'flex-end', width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.08)', justifyContent: 'center', alignItems: 'center', marginTop: 16 },
   closeTxt: { fontSize: 16, color: '#6b7280' },
   hero: { alignItems: 'center', paddingVertical: 32 },
-  heroTitle: { fontSize: 32, fontWeight: '300', color: '#e8eaed', marginTop: 16, letterSpacing: 0.5 },
-  heroSub: { fontSize: 15, color: '#9ba3af', marginTop: 8 },
+  heroTitle: { fontSize: 36, fontFamily: 'Cormorant-Light', color: '#e8eaed', marginTop: 16, letterSpacing: 0.5 },
+  heroSub: { fontSize: 15, fontFamily: 'Nunito-Regular', color: '#9ba3af', marginTop: 8 },
   featureRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
-  featureTitle: { fontSize: 14, fontWeight: '600', color: '#e8eaed' },
-  featureDesc: { fontSize: 12, color: '#6b7280', marginTop: 2, lineHeight: 18 },
+  featureTitle: { fontSize: 14, fontFamily: 'Nunito-SemiBold', color: '#e8eaed' },
+  featureDesc: { fontSize: 12, fontFamily: 'Nunito-Regular', color: '#6b7280', marginTop: 2, lineHeight: 18 },
   noAds: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: 'rgba(126,200,200,0.06)', borderWidth: 1, borderColor: 'rgba(126,200,200,0.1)', borderRadius: 16, padding: 16, marginBottom: 24 },
-  noAdsTxt: { flex: 1, fontSize: 13, fontWeight: '500', color: TEAL, lineHeight: 19 },
+  noAdsTxt: { flex: 1, fontSize: 13, fontFamily: 'Nunito-Medium', color: TEAL, lineHeight: 19 },
   plans: { flexDirection: 'row', gap: 12, marginBottom: 12 },
   planCard: { flex: 1, alignItems: 'center', paddingVertical: 20, paddingHorizontal: 12, borderRadius: 16, borderWidth: 2, borderColor: 'rgba(126,200,200,0.1)', backgroundColor: 'rgba(126,200,200,0.04)', position: 'relative' },
   planSelected: { borderColor: TEAL, backgroundColor: 'rgba(126,200,200,0.06)' },
   bestBadge: { position: 'absolute', top: -10, backgroundColor: TEAL, paddingHorizontal: 10, paddingVertical: 3, borderRadius: 8 },
-  bestTxt: { fontSize: 9, fontWeight: '700', color: '#fff', letterSpacing: 1 },
-  planName: { fontSize: 14, fontWeight: '600', color: '#9ba3af', marginBottom: 4 },
-  planPrice: { fontSize: 28, fontWeight: '300', color: '#e8eaed' },
-  planPeriod: { fontSize: 12, color: '#6b7280', marginTop: 2 },
-  planSave: { fontSize: 12, fontWeight: '600', color: TEAL, marginTop: 6 },
-  planTrial: { fontSize: 11, color: LAVENDER, marginTop: 4 },
+  bestTxt: { fontSize: 9, fontFamily: 'Nunito-Bold', color: '#fff', letterSpacing: 1 },
+  planName: { fontSize: 14, fontFamily: 'Nunito-SemiBold', color: '#9ba3af', marginBottom: 4 },
+  planPrice: { fontSize: 30, fontFamily: 'Cormorant-Light', color: '#e8eaed' },
+  planPeriod: { fontSize: 12, fontFamily: 'Nunito-Regular', color: '#6b7280', marginTop: 2 },
+  planSave: { fontSize: 12, fontFamily: 'Nunito-SemiBold', color: TEAL, marginTop: 6 },
+  planTrial: { fontSize: 11, fontFamily: 'Nunito-Regular', color: LAVENDER, marginTop: 4 },
   lifetimeCard: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 16, borderRadius: 16, borderWidth: 2, borderColor: 'rgba(240,198,116,0.1)', backgroundColor: 'rgba(240,198,116,0.04)', marginBottom: 24 },
   lifetimeSelected: { borderColor: GOLD, backgroundColor: 'rgba(240,198,116,0.08)' },
-  lifetimeDesc: { fontSize: 11, color: '#6b7280', marginTop: 1 },
+  lifetimeDesc: { fontSize: 11, fontFamily: 'Nunito-Regular', color: '#6b7280', marginTop: 1 },
   cta: { paddingVertical: 16, borderRadius: 24, alignItems: 'center', marginBottom: 16 },
-  ctaTxt: { fontSize: 16, fontWeight: '700', color: '#fff', letterSpacing: 0.5 },
-  fine: { fontSize: 11, color: '#6b7280', textAlign: 'center', lineHeight: 17 },
+  ctaTxt: { fontSize: 16, fontFamily: 'Nunito-Bold', color: '#fff', letterSpacing: 0.5 },
+  fine: { fontSize: 11, fontFamily: 'Nunito-Regular', color: '#6b7280', textAlign: 'center', lineHeight: 17 },
   restore: { alignItems: 'center', paddingVertical: 16 },
-  restoreTxt: { fontSize: 13, fontWeight: '500', color: '#6b7280', textDecorationLine: 'underline' },
+  restoreTxt: { fontSize: 13, fontFamily: 'Nunito-Medium', color: '#6b7280', textDecorationLine: 'underline' },
 });

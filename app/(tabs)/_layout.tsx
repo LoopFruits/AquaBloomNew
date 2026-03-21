@@ -1,9 +1,10 @@
 import { Tabs } from 'expo-router';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useAnalytics } from '../../src/hooks/useAnalytics';
 
 const TEAL = '#7ec8c8';
-const MUTED = '#9ba3af';
+const MUTED = '#6b7280';
 
 export default function TabLayout() {
   const { track, EVENTS } = useAnalytics();
@@ -27,9 +28,9 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Hydrate',
-          tabBarIcon: ({ focused }) => (
+          tabBarIcon: ({ focused, color }) => (
             <View style={styles.iconWrap}>
-              <Text style={[styles.icon, { opacity: focused ? 1 : 0.5 }]}>💧</Text>
+              <Ionicons name={focused ? 'water' : 'water-outline'} size={22} color={color} />
               {focused && <View style={styles.indicator} />}
             </View>
           ),
@@ -39,9 +40,9 @@ export default function TabLayout() {
         name="reminders"
         options={{
           title: 'Reminders',
-          tabBarIcon: ({ focused }) => (
+          tabBarIcon: ({ focused, color }) => (
             <View style={styles.iconWrap}>
-              <Text style={[styles.icon, { opacity: focused ? 1 : 0.5 }]}>🔔</Text>
+              <Ionicons name={focused ? 'notifications' : 'notifications-outline'} size={22} color={color} />
               {focused && <View style={styles.indicator} />}
             </View>
           ),
@@ -51,9 +52,9 @@ export default function TabLayout() {
         name="history"
         options={{
           title: 'History',
-          tabBarIcon: ({ focused }) => (
+          tabBarIcon: ({ focused, color }) => (
             <View style={styles.iconWrap}>
-              <Text style={[styles.icon, { opacity: focused ? 1 : 0.5 }]}>📊</Text>
+              <Ionicons name={focused ? 'bar-chart' : 'bar-chart-outline'} size={22} color={color} />
               {focused && <View style={styles.indicator} />}
             </View>
           ),
@@ -63,9 +64,9 @@ export default function TabLayout() {
         name="settings"
         options={{
           title: 'Settings',
-          tabBarIcon: ({ focused }) => (
+          tabBarIcon: ({ focused, color }) => (
             <View style={styles.iconWrap}>
-              <Text style={[styles.icon, { opacity: focused ? 1 : 0.5 }]}>⚙️</Text>
+              <Ionicons name={focused ? 'settings' : 'settings-outline'} size={22} color={color} />
               {focused && <View style={styles.indicator} />}
             </View>
           ),
@@ -92,9 +93,6 @@ const styles = StyleSheet.create({
   iconWrap: {
     alignItems: 'center',
     position: 'relative',
-  },
-  icon: {
-    fontSize: 20,
   },
   indicator: {
     position: 'absolute',
