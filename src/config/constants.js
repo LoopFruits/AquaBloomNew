@@ -134,7 +134,6 @@ export const STORAGE_KEYS = {
   ONBOARDING_COMPLETE: '@aquabloom_onboarding',
   STREAK: '@aquabloom_streak',
   HISTORY: '@aquabloom_history',
-  IS_PREMIUM: '@aquabloom_is_premium',
   BLOOM_POINTS: '@aquabloom_bloom_points',
   PLANT_STATE: '@aquabloom_plant_state',
 };

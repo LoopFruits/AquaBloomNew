@@ -9,10 +9,22 @@
       "distribution": "internal"
     },
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "POSTHOG_API_KEY": "$POSTHOG_API_KEY",
+        "POSTHOG_HOST": "$POSTHOG_HOST",
+        "REVENUECAT_API_KEY_IOS": "$REVENUECAT_API_KEY_IOS",
+        "REVENUECAT_API_KEY_ANDROID": "$REVENUECAT_API_KEY_ANDROID"
+      }
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "env": {
+        "POSTHOG_API_KEY": "$POSTHOG_API_KEY",
+        "POSTHOG_HOST": "$POSTHOG_HOST",
+        "REVENUECAT_API_KEY_IOS": "$REVENUECAT_API_KEY_IOS",
+        "REVENUECAT_API_KEY_ANDROID": "$REVENUECAT_API_KEY_ANDROID"
+      }
     }
   },
   "submit": {
